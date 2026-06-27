@@ -570,7 +570,7 @@ function renderResources() {
   const hp = getTotal({ key: "hp" }, character);
   const stamina = getTotal({ key: "stamina" }, character);
   const intelligence = getTotal({ key: "intelligence" }, character);
-  const magicUses = Math.floor(3 + intelligence / 5);
+  const magicUses = Math.floor(5 + intelligence / 5);
   const resources = [
     { label: "체력", value: hp, max: character.bases.hp, tone: "#b53858", soft: "#f09aae" },
     { label: "스테미나", value: stamina, max: character.bases.stamina, tone: "#3f8d6a", soft: "#8fd0b4" },
@@ -600,7 +600,7 @@ function renderCombatStrip() {
     ["주무기", getTotal({ key: "damage" }, character)],
     ["보조무기", getTotal({ key: "offhandDamage" }, character)],
     ["방어력", getTotal({ key: "armor" }, character)],
-    ["마법", Math.floor(3 + getTotal({ key: "intelligence" }, character) / 5)],
+    ["마법", Math.floor(5 + getTotal({ key: "intelligence" }, character) / 5)],
   ];
 
   document.getElementById("combatStrip").innerHTML = metrics
