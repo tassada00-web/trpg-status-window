@@ -58,6 +58,27 @@ const RIA_BAG = {
   quest: [],
 };
 
+const HAYUL_BAG = {
+  money: 97,
+  equipment: [
+    { name: "낡은 고블린 단검", note: "무기, 힘 2" },
+  ],
+  consumables: [
+    { name: "붕대", quantity: 2, note: "출혈 상태이상 해제/감소 가능" },
+    { name: "조잡한 회복약", quantity: 1, note: "사용 시 체력 5 회복, 단 20% 확률로 구역질 상태이상" },
+    { name: "하급 해독제", quantity: 2 },
+    { name: "시원한 과일수", quantity: 3, tags: ["현재 보급"] },
+    { name: "질 좋은 횃불", quantity: 3, tags: ["현재 보급"] },
+    { name: "가벼운 붕대", quantity: 3, tags: ["현재 보급"] },
+  ],
+  materials: [
+    { name: "마력석 조각", quantity: 1 },
+  ],
+  quest: [
+    { name: "맑은 액체 유리병", quantity: 1, note: "정체 불명 - 감별 필요" },
+  ],
+};
+
 const CHARACTERS = [
   {
     id: "ria",
@@ -180,6 +201,82 @@ const CHARACTERS = [
       { name: "올라타기", body: "민첩 다이스 1", tags: ["SP 2", "이동"] },
       { name: "늑대 리듬 동조", body: "적 속도가 자신보다 빠를 때 받는 쾌락 데미지 +1, 동조 성공 시 매턴마다 1 SP 회복.", tags: ["회복", "동조"] },
       { name: "야수의 정수(패시브)", body: "건강 +4, 속도 -3", tags: ["패시브", "능력치"] },
+    ],
+  },
+  {
+    id: "bom-hayul",
+    name: "봄하율",
+    sigil: "봄",
+    image: "./assets/bom-hayul.png",
+    role: "회복 마법사",
+    tendency: "외유내강",
+    bases: {
+      hp: 30,
+      stamina: 30,
+      strength: 6,
+      vitality: 6,
+      speed: 6,
+      precision: 6,
+      intelligence: 6,
+      wisdom: 6,
+      charm: 6,
+      damage: 0,
+      offhandDamage: 0,
+      armor: 0,
+    },
+    baseLabels: {
+      damage: "x",
+      offhandDamage: "x",
+      armor: "x",
+    },
+    skillBonuses: {},
+    initialState: {
+      hp: { decrease: 0 },
+      stamina: { decrease: 0 },
+    },
+    equipment: [
+      { slot: "머리", name: "", stats: {}, durability: null },
+      { slot: "외투", name: "", stats: {}, durability: null },
+      { slot: "상의", name: "프릴드레스", stats: {}, durability: { max: 15, current: 15 } },
+      { slot: "하의", name: "", stats: {}, durability: null },
+      { slot: "신발", name: "", stats: {}, durability: null },
+      { slot: "장갑", name: "", stats: {}, durability: null },
+      { slot: "반지", name: "", stats: {}, durability: null },
+      { slot: "목걸이", name: "", stats: {}, durability: null },
+      { slot: "귀걸이", name: "", stats: {}, durability: null },
+      { slot: "팔찌", name: "", stats: {}, durability: null },
+      { slot: "주무기", name: "거울 니샤 +1 (붉은 박쥐 마석 인첸트)", stats: { damage: 1 }, durability: null },
+      { slot: "보조무기", name: "", stats: {}, durability: null },
+    ],
+    bag: {
+      ...HAYUL_BAG,
+    },
+    skills: [
+      {
+        name: "여우비lv2",
+        body: "힐진화. 주문횟수 1 소모. 지능다이스로 자신 포함 모든 아군 회복 및 적 전체 피해 +2 (정밀 vs 속도).",
+        tags: ["마법 1"],
+      },
+      {
+        name: "거울 파편 장벽",
+        body: "주문횟수 1 소모. 아군 전체가 공격받을 때 지능결과 /2 만큼 1회 차단.",
+        tags: ["마법 1"],
+      },
+      {
+        name: "수호의 빛",
+        body: "패시브. 아군 치명타 피격 시 전투당 1회, 주문횟수 소모 없이 거울 파편 장벽 자동 발동.",
+        tags: ["패시브"],
+      },
+      {
+        name: "거울 니샤 효과",
+        body: "회복 마법 효과량 +2. 매 턴 시작 시 본인 체력 1 자동 회복.",
+        tags: ["장비 효과"],
+      },
+      {
+        name: "거울 니샤 효과",
+        body: "인접 아군이 출혈 상태일 경우 회복 마법으로 출혈 1스택을 추가 제거.",
+        tags: ["장비 효과"],
+      },
     ],
   },
 ];
