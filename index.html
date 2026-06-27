@@ -3,14 +3,28 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>리아 상태창</title>
+    <title>TRPG 상태창</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="캐릭터 목록 열기" aria-expanded="false" aria-controls="characterSidebar">
+      <span aria-hidden="true">☰</span>
+    </button>
+
+    <aside class="character-sidebar" id="characterSidebar" aria-label="캐릭터 목록" aria-hidden="true">
+      <div class="sidebar-head">
+        <p class="eyebrow">Characters</p>
+        <h2>캐릭터 선택</h2>
+      </div>
+      <div class="character-buttons" id="characterButtons"></div>
+    </aside>
+
+    <button class="sidebar-backdrop" id="sidebarBackdrop" type="button" aria-label="캐릭터 목록 닫기"></button>
+
     <main class="app-shell">
       <header class="topbar">
         <div class="title-lockup" aria-label="캐릭터 상태창">
-          <span class="sigil">R</span>
+          <span class="sigil" id="characterSigil">리</span>
           <div>
             <p class="eyebrow">TRPG Character Profile</p>
             <h1 id="characterName">리아</h1>
@@ -33,17 +47,17 @@
       <section class="dashboard" aria-labelledby="characterName">
         <aside class="portrait-panel">
           <div class="portrait-frame">
-            <img src="./assets/ria.png" alt="리아 캐릭터 프로필" />
+            <img id="portraitImage" src="./assets/ria.png" alt="리아 캐릭터 프로필" />
           </div>
 
           <div class="identity">
             <div>
-              <span class="identity-label">클래스</span>
-              <strong>총사</strong>
+              <span class="identity-label">대표</span>
+              <strong id="characterRole">총사</strong>
             </div>
             <div>
               <span class="identity-label">성향</span>
-              <strong>냉정함</strong>
+              <strong id="characterTendency">냉정함</strong>
             </div>
           </div>
 
@@ -73,7 +87,7 @@
               <div class="board-heading">
                 <div>
                   <p class="section-kicker">총 합계 능력치</p>
-                  <h2 id="statHeading">기본 + 장비 + 상태</h2>
+                  <h2 id="statHeading">기본 + 장비 + 스킬 + 상태</h2>
                 </div>
               </div>
               <div class="stat-table" id="statTable"></div>
