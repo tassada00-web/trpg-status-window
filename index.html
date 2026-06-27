@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>리아 상태창</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="title-lockup" aria-label="캐릭터 상태창">
+          <span class="sigil">R</span>
+          <div>
+            <p class="eyebrow">TRPG Character Profile</p>
+            <h1 id="characterName">리아</h1>
+          </div>
+        </div>
+
+        <nav class="tabs" role="tablist" aria-label="상태창 메뉴">
+          <button class="tab is-active" type="button" role="tab" aria-selected="true" aria-controls="overviewPanel" data-tab="overview">
+            상태
+          </button>
+          <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="equipmentPanel" data-tab="equipment">
+            장비
+          </button>
+          <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="skillsPanel" data-tab="skills">
+            스킬
+          </button>
+        </nav>
+      </header>
+
+      <section class="dashboard" aria-labelledby="characterName">
+        <aside class="portrait-panel">
+          <div class="portrait-frame">
+            <img src="./assets/ria.png" alt="리아 캐릭터 프로필" />
+          </div>
+
+          <div class="identity">
+            <div>
+              <span class="identity-label">클래스</span>
+              <strong>총사</strong>
+            </div>
+            <div>
+              <span class="identity-label">성향</span>
+              <strong>냉정함</strong>
+            </div>
+          </div>
+
+          <dl class="resource-list" id="resourceList"></dl>
+        </aside>
+
+        <section class="screen-panel">
+          <section class="panel is-active" id="overviewPanel" role="tabpanel" data-panel="overview">
+            <div class="overview-grid">
+              <article class="summary-block">
+                <p class="section-kicker">전투 요약</p>
+                <div class="combat-strip" id="combatStrip"></div>
+              </article>
+
+              <article class="summary-block">
+                <p class="section-kicker">상태 조정</p>
+                <div class="status-note">
+                  <span>피해</span>
+                  <strong id="damageTakenLabel">0</strong>
+                  <span>SP 소모</span>
+                  <strong id="staminaSpentLabel">9</strong>
+                </div>
+              </article>
+            </div>
+
+            <section class="stat-board" aria-labelledby="statHeading">
+              <div class="board-heading">
+                <div>
+                  <p class="section-kicker">총 합계 능력치</p>
+                  <h2 id="statHeading">기본 + 장비 + 상태</h2>
+                </div>
+              </div>
+              <div class="stat-table" id="statTable"></div>
+            </section>
+          </section>
+
+          <section class="panel" id="equipmentPanel" role="tabpanel" data-panel="equipment" hidden>
+            <div class="panel-heading">
+              <p class="section-kicker">장비</p>
+              <h2>착용 슬롯</h2>
+            </div>
+            <div class="gear-grid" id="gearGrid"></div>
+          </section>
+
+          <section class="panel" id="skillsPanel" role="tabpanel" data-panel="skills" hidden>
+            <div class="panel-heading">
+              <p class="section-kicker">스킬</p>
+              <h2>보유 스킬</h2>
+            </div>
+            <div class="skill-grid" id="skillGrid"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
