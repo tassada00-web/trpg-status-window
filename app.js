@@ -17,6 +17,12 @@ const STAT_LABELS = Object.fromEntries(STAT_DEFS.map((stat) => [stat.key, stat.l
 const EDITABLE_STAT_DEFS = STAT_DEFS.filter((stat) => !["hp", "stamina"].includes(stat.key));
 const GM_PASSWORD = "960929";
 const SAVE_KEY = "trpg-status-window:data:v1";
+const BAG_CATEGORIES = [
+  { key: "equipment", label: "장비" },
+  { key: "consumables", label: "소모품" },
+  { key: "materials", label: "재료" },
+  { key: "quest", label: "특수(퀘스트)" },
+];
 
 const CHARACTERS = [
   {
@@ -64,6 +70,12 @@ const CHARACTERS = [
       { slot: "주무기", name: "개량형 강선 머스킷 (40/40)", stats: { speed: -1, damage: 8 }, durability: { max: 40, current: 40 } },
       { slot: "보조무기", name: "날이 잘 선 손도끼 (20/15)", stats: { offhandDamage: 3 }, durability: { max: 20, current: 15 } },
     ],
+    bag: {
+      equipment: [],
+      consumables: [],
+      materials: [],
+      quest: [],
+    },
     skills: [
       { name: "총사", body: "힘다이스 없이 탄알효과만 발동", tags: ["직업"] },
       { name: "개머리판 공격 1t", body: "힘 50% 값만큼 피해, 힘 값 2배 차이경우 넉백", tags: ["공격"] },
@@ -125,6 +137,12 @@ const CHARACTERS = [
       { slot: "주무기", name: "완드", stats: { damage: 1 }, durability: null },
       { slot: "보조무기", name: "", stats: {}, durability: null },
     ],
+    bag: {
+      equipment: [],
+      consumables: [],
+      materials: [],
+      quest: [],
+    },
     skills: [
       { name: "마나볼", body: "지능 결과값 +4", tags: ["마법 1", "공격"] },
       { name: "올라타기", body: "민첩 다이스 1", tags: ["SP 2", "이동"] },
@@ -138,6 +156,7 @@ const savedState = loadSavedData();
 const characterState = Object.fromEntries(CHARACTERS.map((character) => [character.id, createState(character)]));
 applySavedState(savedState);
 let activeCharacterId = CHARACTERS[0].id;
+let activeBagCategory = BAG_CATEGORIES[0].key;
 let isGmMode = false;
 let activeEditor = null;
 let hasUnsavedChanges = false;
@@ -183,6 +202,29 @@ function normalizeStats(stats) {
   }, {});
 }
 
+function normalizeBagItem(item) {
+  if (typeof item === "string") {
+    return { name: item, quantity: 1, note: "", tags: [] };
+  }
+
+  const quantity = normalizeNumber(item?.quantity ?? item?.count ?? 1, 1);
+  return {
+    name: item?.name || "",
+    quantity,
+    note: item?.note || item?.body || "",
+    tags: Array.isArray(item?.tags) ? item.tags.filter(Boolean) : [],
+  };
+}
+
+function normalizeBag(bag = {}) {
+  return Object.fromEntries(
+    BAG_CATEGORIES.map((category) => [
+      category.key,
+      Array.isArray(bag[category.key]) ? bag[category.key].map(normalizeBagItem) : [],
+    ]),
+  );
+}
+
 function loadSavedData() {
   try {
     const saved = JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
@@ -207,6 +249,10 @@ function loadSavedData() {
           body: skill.body || "",
           tags: Array.isArray(skill.tags) ? skill.tags.filter(Boolean) : [],
         }));
+      }
+
+      if (savedCharacter.bag) {
+        character.bag = normalizeBag(savedCharacter.bag);
       }
 
       if (savedCharacter.skillBonuses) {
@@ -246,6 +292,7 @@ function saveGameData() {
         role: character.role,
         tendency: character.tendency,
         equipment: cloneData(character.equipment),
+        bag: cloneData(normalizeBag(character.bag)),
         skills: cloneData(character.skills),
         skillBonuses: cloneData(character.skillBonuses),
       })),
@@ -547,6 +594,49 @@ function renderSkills() {
     .join("");
 }
 
+function renderBag() {
+  const character = getCharacter();
+  const bag = normalizeBag(character.bag);
+  character.bag = bag;
+  const activeCategory = BAG_CATEGORIES.find((category) => category.key === activeBagCategory) || BAG_CATEGORIES[0];
+  const items = bag[activeCategory.key] || [];
+
+  document.getElementById("bagCategories").innerHTML = BAG_CATEGORIES.map((category) => {
+    const isActive = category.key === activeCategory.key;
+    const count = bag[category.key].length;
+    return `
+      <button class="bag-category ${isActive ? "is-active" : ""}" type="button" role="tab" aria-selected="${isActive ? "true" : "false"}" data-bag-category="${category.key}">
+        <span>${category.label}</span>
+        <strong>${count}</strong>
+      </button>
+    `;
+  }).join("");
+
+  document.getElementById("bagList").innerHTML = items.length
+    ? items
+        .map((item) => {
+          const quantity = item.quantity !== 1 ? `<span class="bag-quantity">x${item.quantity}</span>` : "";
+          const tags = (item.tags || []).map((tag) => `<span class="skill-tag">${escapeHtml(tag)}</span>`).join("");
+          return `
+            <article class="bag-card">
+              <div class="bag-card-head">
+                <p class="gear-name">${escapeHtml(item.name || "이름 없는 물품")}</p>
+                ${quantity}
+              </div>
+              ${item.note ? `<p class="bag-note">${escapeHtml(item.note)}</p>` : ""}
+              ${tags ? `<div class="skill-tags">${tags}</div>` : ""}
+            </article>
+          `;
+        })
+        .join("")
+    : `
+      <div class="bag-empty">
+        <strong>${activeCategory.label}</strong>
+        <span>아직 등록된 물품 없음</span>
+      </div>
+    `;
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -705,6 +795,7 @@ function renderAll() {
   renderStats();
   renderEquipment();
   renderSkills();
+  renderBag();
 }
 
 function bindTabs() {
@@ -722,6 +813,15 @@ function bindTabs() {
         panel.classList.toggle("is-active", active);
       });
     });
+  });
+}
+
+function bindBagTabs() {
+  document.getElementById("bagCategories").addEventListener("click", (event) => {
+    const button = event.target.closest(".bag-category");
+    if (!button) return;
+    activeBagCategory = button.dataset.bagCategory;
+    renderBag();
   });
 }
 
@@ -857,6 +957,7 @@ function bindStatInputs() {
 }
 
 bindTabs();
+bindBagTabs();
 bindSidebar();
 bindGmAuth();
 bindSave();

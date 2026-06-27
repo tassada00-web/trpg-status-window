@@ -42,6 +42,9 @@
             <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="skillsPanel" data-tab="skills">
               스킬
             </button>
+            <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="bagPanel" data-tab="bag">
+              가방
+            </button>
           </nav>
 
           <button class="gm-button" id="gmLoginButton" type="button" aria-haspopup="dialog">
@@ -118,6 +121,15 @@
               <h2>보유 스킬</h2>
             </div>
             <div class="skill-grid" id="skillGrid"></div>
+          </section>
+
+          <section class="panel" id="bagPanel" role="tabpanel" data-panel="bag" hidden>
+            <div class="panel-heading">
+              <p class="section-kicker">가방</p>
+              <h2>소지품</h2>
+            </div>
+            <div class="bag-categories" id="bagCategories" role="tablist" aria-label="가방 분류"></div>
+            <div class="bag-list" id="bagList"></div>
           </section>
         </section>
       </section>
