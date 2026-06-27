@@ -14,6 +14,7 @@ const STAT_DEFS = [
 ];
 
 const STAT_LABELS = Object.fromEntries(STAT_DEFS.map((stat) => [stat.key, stat.label]));
+const GM_PASSWORD = "960929";
 
 const CHARACTERS = [
   {
@@ -133,6 +134,7 @@ const CHARACTERS = [
 
 const characterState = Object.fromEntries(CHARACTERS.map((character) => [character.id, createState(character)]));
 let activeCharacterId = CHARACTERS[0].id;
+let isGmMode = false;
 
 function createState(character) {
   const state = Object.fromEntries(
@@ -197,6 +199,28 @@ function setSidebar(open) {
   document.getElementById("characterSidebar").classList.toggle("is-open", open);
   document.getElementById("characterSidebar").setAttribute("aria-hidden", open ? "false" : "true");
   document.getElementById("sidebarToggle").setAttribute("aria-expanded", open ? "true" : "false");
+}
+
+function setGmDialog(open) {
+  const dialog = document.getElementById("gmDialog");
+  const input = document.getElementById("gmPasswordInput");
+  const error = document.getElementById("gmError");
+  dialog.hidden = !open;
+  document.body.classList.toggle("gm-dialog-open", open);
+
+  if (open) {
+    input.value = "";
+    error.textContent = "";
+    window.setTimeout(() => input.focus(), 0);
+  }
+}
+
+function renderGmState() {
+  document.body.classList.toggle("gm-mode", isGmMode);
+  const button = document.getElementById("gmLoginButton");
+  button.textContent = isGmMode ? "GM 모드" : "GM 로그인";
+  button.classList.toggle("is-active", isGmMode);
+  button.setAttribute("aria-disabled", isGmMode ? "true" : "false");
 }
 
 function renderCharacterButtons() {
@@ -276,6 +300,13 @@ function renderStats() {
   const character = getCharacter();
   const state = getState();
   const gearBonus = sumStats(character.equipment);
+  const renderModifierCell = (stat, modifier, kind, label) => {
+    if (!isGmMode) {
+      return `<span class="readonly-number">${modifier[kind]}</span>`;
+    }
+
+    return `<input class="stat-input" type="number" value="${modifier[kind]}" min="0" data-stat="${stat.key}" data-kind="${kind}" aria-label="${stat.label} ${label}" />`;
+  };
   const head = `
     <div class="stat-row is-head" aria-hidden="true">
       <div class="stat-cell">능력치</div>
@@ -302,10 +333,10 @@ function renderStats() {
         <div class="stat-cell stat-value">${formatSigned(gear)}</div>
         <div class="stat-cell stat-value">${formatSigned(skill)}</div>
         <div class="stat-cell">
-          <input class="stat-input" type="number" value="${modifier.increase}" min="0" data-stat="${stat.key}" data-kind="increase" aria-label="${stat.label} 증가" />
+          ${renderModifierCell(stat, modifier, "increase", "증가")}
         </div>
         <div class="stat-cell">
-          <input class="stat-input" type="number" value="${modifier.decrease}" min="0" data-stat="${stat.key}" data-kind="decrease" aria-label="${stat.label} 감소" />
+          ${renderModifierCell(stat, modifier, "decrease", "감소")}
         </div>
         <div class="stat-cell stat-value stat-result">${total}</div>
         <div class="stat-cell bar-cell" style="--bar-tone: ${stat.tone}; --stat-meter: ${percent}%">
@@ -318,6 +349,27 @@ function renderStats() {
   document.getElementById("statTable").innerHTML = head + rows;
   document.getElementById("damageTakenLabel").textContent = state.hp.decrease;
   document.getElementById("staminaSpentLabel").textContent = state.stamina.decrease;
+}
+
+function refreshComputedFields() {
+  const character = getCharacter();
+  const state = getState();
+  const rows = document.querySelectorAll(".stat-row:not(.is-head)");
+
+  STAT_DEFS.forEach((stat, index) => {
+    const row = rows[index];
+    if (!row) return;
+
+    const total = getTotal(stat, character);
+    const percent = clamp((Math.max(total, 0) / stat.cap) * 100, 0, 100);
+    row.children[6].textContent = total;
+    row.children[7].style.setProperty("--stat-meter", `${percent}%`);
+  });
+
+  document.getElementById("damageTakenLabel").textContent = state.hp.decrease;
+  document.getElementById("staminaSpentLabel").textContent = state.stamina.decrease;
+  renderResources();
+  renderCombatStrip();
 }
 
 function renderEquipment() {
@@ -373,6 +425,7 @@ function renderSkills() {
 }
 
 function renderAll() {
+  renderGmState();
   renderCharacterButtons();
   renderIdentity();
   renderResources();
@@ -419,18 +472,61 @@ function bindSidebar() {
   });
 }
 
+function bindGmAuth() {
+  document.getElementById("gmLoginButton").addEventListener("click", () => {
+    if (isGmMode) return;
+    setGmDialog(true);
+  });
+
+  document.getElementById("gmCloseButton").addEventListener("click", () => setGmDialog(false));
+
+  document.getElementById("gmDialog").addEventListener("click", (event) => {
+    if (event.target.id === "gmDialog") {
+      setGmDialog(false);
+    }
+  });
+
+  document.getElementById("gmForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const input = document.getElementById("gmPasswordInput");
+    const error = document.getElementById("gmError");
+
+    if (input.value === GM_PASSWORD) {
+      isGmMode = true;
+      setGmDialog(false);
+      renderAll();
+      return;
+    }
+
+    error.textContent = "비밀번호가 맞지 않습니다.";
+    input.select();
+  });
+}
+
 function bindStatInputs() {
-  document.getElementById("statTable").addEventListener("change", (event) => {
-    const input = event.target.closest(".stat-input");
-    if (!input) return;
+  const applyInput = (input) => {
+    if (!input || !isGmMode) return;
     const state = getState();
     const value = Number(input.value || 0);
     state[input.dataset.stat][input.dataset.kind] = Number.isFinite(value) ? Math.max(0, value) : 0;
+  };
+
+  document.getElementById("statTable").addEventListener("input", (event) => {
+    const input = event.target.closest(".stat-input");
+    applyInput(input);
+    if (input) refreshComputedFields();
+  });
+
+  document.getElementById("statTable").addEventListener("change", (event) => {
+    const input = event.target.closest(".stat-input");
+    applyInput(input);
+    if (!input) return;
     renderAll();
   });
 }
 
 bindTabs();
 bindSidebar();
+bindGmAuth();
 bindStatInputs();
 renderAll();
