@@ -14,7 +14,9 @@ const STAT_DEFS = [
 ];
 
 const STAT_LABELS = Object.fromEntries(STAT_DEFS.map((stat) => [stat.key, stat.label]));
+const EDITABLE_STAT_DEFS = STAT_DEFS.filter((stat) => !["hp", "stamina"].includes(stat.key));
 const GM_PASSWORD = "960929";
+const SAVE_KEY = "trpg-status-window:data:v1";
 
 const CHARACTERS = [
   {
@@ -132,9 +134,13 @@ const CHARACTERS = [
   },
 ];
 
+const savedState = loadSavedData();
 const characterState = Object.fromEntries(CHARACTERS.map((character) => [character.id, createState(character)]));
+applySavedState(savedState);
 let activeCharacterId = CHARACTERS[0].id;
 let isGmMode = false;
+let activeEditor = null;
+let hasUnsavedChanges = false;
 
 function createState(character) {
   const state = Object.fromEntries(
@@ -155,6 +161,116 @@ function createState(character) {
   });
 
   return state;
+}
+
+function cloneData(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function normalizeNumber(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
+function normalizeStats(stats) {
+  return Object.entries(stats || {}).reduce((result, [key, value]) => {
+    if (!EDITABLE_STAT_DEFS.some((stat) => stat.key === key)) return result;
+    const number = normalizeNumber(value);
+    if (number !== 0) {
+      result[key] = number;
+    }
+    return result;
+  }, {});
+}
+
+function loadSavedData() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
+    if (!saved) return null;
+
+    (saved.characters || []).forEach((savedCharacter) => {
+      const character = CHARACTERS.find((item) => item.id === savedCharacter.id);
+      if (!character) return;
+
+      if (Array.isArray(savedCharacter.equipment)) {
+        character.equipment = savedCharacter.equipment.map((item) => ({
+          slot: item.slot || "",
+          name: item.name || "",
+          stats: normalizeStats(item.stats),
+          durability: item.durability || null,
+        }));
+      }
+
+      if (Array.isArray(savedCharacter.skills)) {
+        character.skills = savedCharacter.skills.map((skill) => ({
+          name: skill.name || "",
+          body: skill.body || "",
+          tags: Array.isArray(skill.tags) ? skill.tags.filter(Boolean) : [],
+        }));
+      }
+
+      if (savedCharacter.skillBonuses) {
+        character.skillBonuses = normalizeStats(savedCharacter.skillBonuses);
+      }
+
+      if (typeof savedCharacter.role === "string") character.role = savedCharacter.role;
+      if (typeof savedCharacter.tendency === "string") character.tendency = savedCharacter.tendency;
+    });
+
+    return saved.characterState || null;
+  } catch (error) {
+    console.warn("Saved data could not be loaded.", error);
+    return null;
+  }
+}
+
+function applySavedState(saved) {
+  if (!saved) return;
+
+  Object.entries(saved).forEach(([characterId, savedCharacterState]) => {
+    if (!characterState[characterId]) return;
+    Object.entries(savedCharacterState || {}).forEach(([statKey, savedStat]) => {
+      if (!characterState[characterId][statKey]) return;
+      characterState[characterId][statKey].increase = normalizeNumber(savedStat.increase);
+      characterState[characterId][statKey].decrease = normalizeNumber(savedStat.decrease);
+    });
+  });
+}
+
+function saveGameData() {
+  try {
+    const payload = {
+      savedAt: new Date().toISOString(),
+      characters: CHARACTERS.map((character) => ({
+        id: character.id,
+        role: character.role,
+        tendency: character.tendency,
+        equipment: cloneData(character.equipment),
+        skills: cloneData(character.skills),
+        skillBonuses: cloneData(character.skillBonuses),
+      })),
+      characterState: cloneData(characterState),
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(payload));
+    hasUnsavedChanges = false;
+    showSaveStatus("저장됨");
+    renderGmState();
+  } catch (error) {
+    console.error("Save failed.", error);
+    showSaveStatus("저장 실패");
+  }
+}
+
+function markDirty() {
+  hasUnsavedChanges = true;
+  showSaveStatus("저장 필요");
+  renderGmState();
+}
+
+function showSaveStatus(message) {
+  const status = document.getElementById("saveStatus");
+  if (!status) return;
+  status.textContent = message;
 }
 
 function getCharacter() {
@@ -218,9 +334,16 @@ function setGmDialog(open) {
 function renderGmState() {
   document.body.classList.toggle("gm-mode", isGmMode);
   const button = document.getElementById("gmLoginButton");
+  const saveButton = document.getElementById("saveButton");
   button.textContent = isGmMode ? "GM 모드" : "GM 로그인";
   button.classList.toggle("is-active", isGmMode);
   button.setAttribute("aria-disabled", isGmMode ? "true" : "false");
+  saveButton.hidden = !isGmMode;
+  saveButton.classList.toggle("has-changes", hasUnsavedChanges);
+  saveButton.textContent = hasUnsavedChanges ? "저장하기 *" : "저장하기";
+  if (!isGmMode) {
+    showSaveStatus("");
+  }
 }
 
 function renderCharacterButtons() {
@@ -375,7 +498,7 @@ function refreshComputedFields() {
 function renderEquipment() {
   const character = getCharacter();
   document.getElementById("gearGrid").innerHTML = character.equipment
-    .map((item) => {
+    .map((item, index) => {
       const isEmpty = !item.name;
       const durability = item.durability
         ? item.durability.current === null
@@ -384,7 +507,7 @@ function renderEquipment() {
         : "";
       const bonuses = Object.entries(item.stats);
       return `
-        <article class="gear-card ${isEmpty ? "is-empty" : ""}">
+        <article class="gear-card ${isEmpty ? "is-empty" : ""} ${isGmMode ? "is-editable" : ""}" data-equipment-index="${index}" tabindex="${isGmMode ? "0" : "-1"}">
           <div class="gear-head">
             <div>
               <span class="slot">${item.slot}</span>
@@ -410,8 +533,8 @@ function renderEquipment() {
 function renderSkills() {
   const character = getCharacter();
   document.getElementById("skillGrid").innerHTML = character.skills
-    .map((skill) => `
-      <article class="skill-card">
+    .map((skill, index) => `
+      <article class="skill-card ${isGmMode ? "is-editable" : ""}" data-skill-index="${index}" tabindex="${isGmMode ? "0" : "-1"}">
         <div class="skill-head">
           <p class="skill-name">${skill.name}</p>
         </div>
@@ -422,6 +545,155 @@ function renderSkills() {
       </article>
     `)
     .join("");
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function setEditDialog(open) {
+  const dialog = document.getElementById("editDialog");
+  dialog.hidden = !open;
+  document.body.classList.toggle("edit-dialog-open", open);
+
+  if (!open) {
+    activeEditor = null;
+  }
+}
+
+function equipmentOptionRow(key = "strength", value = 0) {
+  const options = EDITABLE_STAT_DEFS.map((stat) => `
+    <option value="${stat.key}" ${stat.key === key ? "selected" : ""}>${stat.label}</option>
+  `).join("");
+
+  return `
+    <div class="option-row equipment-option-row">
+      <select class="option-stat" aria-label="능력치 선택">${options}</select>
+      <input class="option-value" type="number" value="${Number(value) || 0}" aria-label="능력치 수치" />
+      <button class="icon-action option-remove" type="button" aria-label="옵션 제거">×</button>
+    </div>
+  `;
+}
+
+function skillOptionRow(value = "") {
+  return `
+    <div class="option-row skill-option-row">
+      <input class="option-tag" type="text" value="${escapeHtml(value)}" aria-label="스킬 옵션" />
+      <button class="icon-action option-remove" type="button" aria-label="옵션 제거">×</button>
+    </div>
+  `;
+}
+
+function openEquipmentEditor(index) {
+  if (!isGmMode) return;
+
+  const character = getCharacter();
+  const item = character.equipment[index];
+  if (!item) return;
+
+  activeEditor = { type: "equipment", index };
+  document.getElementById("editDialogKicker").textContent = item.slot || "장비";
+  document.getElementById("editDialogTitle").textContent = "장비 수정";
+  document.getElementById("editOptionsTitle").textContent = "능력치 옵션";
+  document.getElementById("addOptionButton").textContent = "능력치 추가";
+  document.getElementById("editFields").innerHTML = `
+    <label class="edit-field">
+      <span>이름</span>
+      <input id="editName" type="text" value="${escapeHtml(item.name)}" />
+    </label>
+  `;
+
+  const rows = Object.entries(item.stats || {});
+  document.getElementById("editOptions").innerHTML = rows.length
+    ? rows.map(([key, value]) => equipmentOptionRow(key, value)).join("")
+    : equipmentOptionRow();
+
+  setEditDialog(true);
+  window.setTimeout(() => document.getElementById("editName").focus(), 0);
+}
+
+function openSkillEditor(index) {
+  if (!isGmMode) return;
+
+  const character = getCharacter();
+  const skill = character.skills[index];
+  if (!skill) return;
+
+  activeEditor = { type: "skill", index };
+  document.getElementById("editDialogKicker").textContent = "스킬";
+  document.getElementById("editDialogTitle").textContent = "스킬 수정";
+  document.getElementById("editOptionsTitle").textContent = "스킬 옵션";
+  document.getElementById("addOptionButton").textContent = "옵션 추가";
+  document.getElementById("editFields").innerHTML = `
+    <label class="edit-field">
+      <span>이름</span>
+      <input id="editName" type="text" value="${escapeHtml(skill.name)}" />
+    </label>
+    <label class="edit-field">
+      <span>내용</span>
+      <textarea id="editBody" rows="4">${escapeHtml(skill.body)}</textarea>
+    </label>
+  `;
+
+  document.getElementById("editOptions").innerHTML = (skill.tags || []).length
+    ? skill.tags.map((tag) => skillOptionRow(tag)).join("")
+    : skillOptionRow();
+
+  setEditDialog(true);
+  window.setTimeout(() => document.getElementById("editName").focus(), 0);
+}
+
+function addEditorOption() {
+  if (!activeEditor) return;
+
+  const options = document.getElementById("editOptions");
+  options.insertAdjacentHTML("beforeend", activeEditor.type === "equipment" ? equipmentOptionRow() : skillOptionRow());
+}
+
+function applyEquipmentEditor() {
+  const character = getCharacter();
+  const item = character.equipment[activeEditor.index];
+  if (!item) return;
+
+  item.name = document.getElementById("editName").value.trim();
+  item.stats = {};
+
+  document.querySelectorAll(".equipment-option-row").forEach((row) => {
+    const key = row.querySelector(".option-stat").value;
+    const value = normalizeNumber(row.querySelector(".option-value").value);
+    if (!key || value === 0) return;
+    item.stats[key] = (item.stats[key] || 0) + value;
+  });
+}
+
+function applySkillEditor() {
+  const character = getCharacter();
+  const skill = character.skills[activeEditor.index];
+  if (!skill) return;
+
+  skill.name = document.getElementById("editName").value.trim();
+  skill.body = document.getElementById("editBody").value.trim();
+  skill.tags = Array.from(document.querySelectorAll(".option-tag"))
+    .map((input) => input.value.trim())
+    .filter(Boolean);
+}
+
+function applyEditor() {
+  if (!activeEditor) return;
+
+  if (activeEditor.type === "equipment") {
+    applyEquipmentEditor();
+  } else {
+    applySkillEditor();
+  }
+
+  markDirty();
+  setEditDialog(false);
+  renderAll();
 }
 
 function renderAll() {
@@ -503,12 +775,71 @@ function bindGmAuth() {
   });
 }
 
+function bindSave() {
+  document.getElementById("saveButton").addEventListener("click", () => {
+    if (!isGmMode) return;
+    saveGameData();
+  });
+}
+
+function bindEditors() {
+  document.getElementById("gearGrid").addEventListener("click", (event) => {
+    const card = event.target.closest(".gear-card");
+    if (!card || !isGmMode) return;
+    openEquipmentEditor(Number(card.dataset.equipmentIndex));
+  });
+
+  document.getElementById("gearGrid").addEventListener("keydown", (event) => {
+    if (!["Enter", " "].includes(event.key)) return;
+    const card = event.target.closest(".gear-card");
+    if (!card || !isGmMode) return;
+    event.preventDefault();
+    openEquipmentEditor(Number(card.dataset.equipmentIndex));
+  });
+
+  document.getElementById("skillGrid").addEventListener("click", (event) => {
+    const card = event.target.closest(".skill-card");
+    if (!card || !isGmMode) return;
+    openSkillEditor(Number(card.dataset.skillIndex));
+  });
+
+  document.getElementById("skillGrid").addEventListener("keydown", (event) => {
+    if (!["Enter", " "].includes(event.key)) return;
+    const card = event.target.closest(".skill-card");
+    if (!card || !isGmMode) return;
+    event.preventDefault();
+    openSkillEditor(Number(card.dataset.skillIndex));
+  });
+
+  document.getElementById("addOptionButton").addEventListener("click", addEditorOption);
+  document.getElementById("editCloseButton").addEventListener("click", () => setEditDialog(false));
+  document.getElementById("editCancelButton").addEventListener("click", () => setEditDialog(false));
+
+  document.getElementById("editDialog").addEventListener("click", (event) => {
+    if (event.target.id === "editDialog") {
+      setEditDialog(false);
+    }
+  });
+
+  document.getElementById("editOptions").addEventListener("click", (event) => {
+    const removeButton = event.target.closest(".option-remove");
+    if (!removeButton) return;
+    removeButton.closest(".option-row").remove();
+  });
+
+  document.getElementById("editForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    applyEditor();
+  });
+}
+
 function bindStatInputs() {
   const applyInput = (input) => {
     if (!input || !isGmMode) return;
     const state = getState();
     const value = Number(input.value || 0);
     state[input.dataset.stat][input.dataset.kind] = Number.isFinite(value) ? Math.max(0, value) : 0;
+    markDirty();
   };
 
   document.getElementById("statTable").addEventListener("input", (event) => {
@@ -528,5 +859,7 @@ function bindStatInputs() {
 bindTabs();
 bindSidebar();
 bindGmAuth();
+bindSave();
+bindEditors();
 bindStatInputs();
 renderAll();

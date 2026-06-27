@@ -47,6 +47,10 @@
           <button class="gm-button" id="gmLoginButton" type="button" aria-haspopup="dialog">
             GM 로그인
           </button>
+          <button class="save-button" id="saveButton" type="button" hidden>
+            저장하기
+          </button>
+          <span class="save-status" id="saveStatus" aria-live="polite"></span>
         </div>
       </header>
 
@@ -135,6 +139,31 @@
         </label>
         <p class="gm-error" id="gmError" role="alert"></p>
         <button class="gm-submit" type="submit">확인</button>
+      </form>
+    </div>
+
+    <div class="edit-dialog" id="editDialog" role="dialog" aria-modal="true" aria-labelledby="editDialogTitle" hidden>
+      <form class="edit-card" id="editForm">
+        <div class="gm-dialog-head">
+          <div>
+            <p class="eyebrow" id="editDialogKicker">GM Editor</p>
+            <h2 id="editDialogTitle">편집</h2>
+          </div>
+          <button class="gm-close" id="editCloseButton" type="button" aria-label="편집 닫기">×</button>
+        </div>
+
+        <div class="edit-fields" id="editFields"></div>
+
+        <div class="edit-options-head">
+          <strong id="editOptionsTitle">옵션</strong>
+          <button class="mini-action" id="addOptionButton" type="button">추가</button>
+        </div>
+        <div class="edit-options" id="editOptions"></div>
+
+        <div class="edit-actions">
+          <button class="secondary-action" id="editCancelButton" type="button">취소</button>
+          <button class="gm-submit" type="submit">적용</button>
+        </div>
       </form>
     </div>
 
