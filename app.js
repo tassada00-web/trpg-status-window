@@ -239,7 +239,7 @@ function normalizeBagItem(item) {
     return { name: item, quantity: 1, note: "", tags: [] };
   }
 
-  const quantity = normalizeNumber(item?.quantity ?? item?.count ?? 1, 1);
+  const quantity = Math.max(1, normalizeNumber(item?.quantity ?? item?.count ?? 1, 1));
   return {
     name: item?.name || "",
     quantity,
@@ -263,8 +263,9 @@ function normalizeBag(bag = {}) {
 function mergeBagData(baseBag, savedBag) {
   const base = normalizeBag(baseBag);
   const saved = normalizeBag(savedBag);
+  const savedHasMoney = ["money", "penny", "pennies"].some((key) => Object.prototype.hasOwnProperty.call(savedBag || {}, key));
   return {
-    money: saved.money || base.money,
+    money: savedHasMoney ? saved.money : base.money,
     ...Object.fromEntries(
       BAG_CATEGORIES.map((category) => [
         category.key,
@@ -654,10 +655,26 @@ function renderBag() {
   const activeCategory = BAG_CATEGORIES.find((category) => category.key === activeBagCategory) || BAG_CATEGORIES[0];
   const items = bag[activeCategory.key] || [];
 
-  document.getElementById("bagWallet").innerHTML = `
-    <span>소지금</span>
-    <strong>${formatPenny(bag.money)}</strong>
-  `;
+  document.getElementById("bagWallet").innerHTML = isGmMode
+    ? `
+      <span>소지금</span>
+      <label class="bag-money-control">
+        <input class="bag-money-input" type="number" min="0" value="${bag.money}" aria-label="소지금 페니" />
+        <span class="bag-money-unit">페니</span>
+      </label>
+    `
+    : `
+      <span>소지금</span>
+      <strong>${formatPenny(bag.money)}</strong>
+    `;
+
+  document.getElementById("bagToolbar").innerHTML = isGmMode
+    ? `
+      <button class="bag-add-button" type="button" data-bag-add="${activeCategory.key}">
+        ${activeCategory.label} 추가
+      </button>
+    `
+    : "";
 
   document.getElementById("bagCategories").innerHTML = BAG_CATEGORIES.map((category) => {
     const isActive = category.key === activeCategory.key;
@@ -676,7 +693,7 @@ function renderBag() {
           const quantity = item.quantity !== 1 ? `<span class="bag-quantity">x${item.quantity}</span>` : "";
           const tags = (item.tags || []).map((tag) => `<span class="skill-tag">${escapeHtml(tag)}</span>`).join("");
           return `
-            <article class="bag-card">
+            <article class="bag-card ${isGmMode ? "is-editable" : ""}" data-bag-category="${activeCategory.key}" data-bag-index="${index}" tabindex="${isGmMode ? "0" : "-1"}">
               <div class="bag-card-head">
                 <p class="gear-name">${escapeHtml(item.name || "이름 없는 물품")}</p>
                 ${quantity}
@@ -734,6 +751,12 @@ function skillOptionRow(value = "") {
       <button class="icon-action option-remove" type="button" aria-label="옵션 제거">×</button>
     </div>
   `;
+}
+
+function bagCategoryOptions(selectedKey = activeBagCategory) {
+  return BAG_CATEGORIES.map((category) => `
+    <option value="${category.key}" ${category.key === selectedKey ? "selected" : ""}>${category.label}</option>
+  `).join("");
 }
 
 function openEquipmentEditor(index) {
@@ -795,6 +818,55 @@ function openSkillEditor(index) {
   window.setTimeout(() => document.getElementById("editName").focus(), 0);
 }
 
+function openBagItemEditor(categoryKey, index = null) {
+  if (!isGmMode) return;
+
+  const character = getCharacter();
+  character.bag = normalizeBag(character.bag);
+  const isNew = index === null;
+  const item = isNew
+    ? { name: "", quantity: 1, note: "", tags: [] }
+    : character.bag[categoryKey]?.[index];
+  if (!item) return;
+
+  const category = BAG_CATEGORIES.find((entry) => entry.key === categoryKey) || BAG_CATEGORIES[0];
+  activeEditor = { type: "bag", categoryKey, index };
+  document.getElementById("editDialogKicker").textContent = category.label;
+  document.getElementById("editDialogTitle").textContent = isNew ? "물품 추가" : "물품 수정";
+  document.getElementById("editOptionsTitle").textContent = "태그";
+  document.getElementById("addOptionButton").textContent = "태그 추가";
+  document.getElementById("editFields").innerHTML = `
+    <label class="edit-field">
+      <span>분류</span>
+      <select id="editBagCategory">${bagCategoryOptions(categoryKey)}</select>
+    </label>
+    <label class="edit-field">
+      <span>이름</span>
+      <input id="editName" type="text" value="${escapeHtml(item.name)}" />
+    </label>
+    <label class="edit-field">
+      <span>수량</span>
+      <input id="editQuantity" type="number" min="1" value="${Math.max(1, normalizeNumber(item.quantity, 1))}" />
+    </label>
+    <label class="edit-field">
+      <span>설명</span>
+      <textarea id="editBody" rows="4">${escapeHtml(item.note)}</textarea>
+    </label>
+    ${
+      isNew
+        ? ""
+        : `<button class="danger-action" id="deleteBagItemButton" type="button">물품 삭제</button>`
+    }
+  `;
+
+  document.getElementById("editOptions").innerHTML = (item.tags || []).length
+    ? item.tags.map((tag) => skillOptionRow(tag)).join("")
+    : skillOptionRow();
+
+  setEditDialog(true);
+  window.setTimeout(() => document.getElementById("editName").focus(), 0);
+}
+
 function addEditorOption() {
   if (!activeEditor) return;
 
@@ -830,13 +902,56 @@ function applySkillEditor() {
     .filter(Boolean);
 }
 
+function applyBagItemEditor() {
+  const character = getCharacter();
+  character.bag = normalizeBag(character.bag);
+  const nextCategoryKey = document.getElementById("editBagCategory").value;
+  const item = {
+    name: document.getElementById("editName").value.trim(),
+    quantity: Math.max(1, normalizeNumber(document.getElementById("editQuantity").value, 1)),
+    note: document.getElementById("editBody").value.trim(),
+    tags: Array.from(document.querySelectorAll(".option-tag"))
+      .map((input) => input.value.trim())
+      .filter(Boolean),
+  };
+
+  if (activeEditor.index === null) {
+    character.bag[nextCategoryKey].push(item);
+    activeBagCategory = nextCategoryKey;
+    return;
+  }
+
+  if (activeEditor.categoryKey === nextCategoryKey) {
+    character.bag[nextCategoryKey][activeEditor.index] = item;
+    activeBagCategory = nextCategoryKey;
+    return;
+  }
+
+  character.bag[activeEditor.categoryKey].splice(activeEditor.index, 1);
+  character.bag[nextCategoryKey].push(item);
+  activeBagCategory = nextCategoryKey;
+}
+
+function deleteBagItem() {
+  if (!activeEditor || activeEditor.type !== "bag" || activeEditor.index === null) return;
+
+  const character = getCharacter();
+  character.bag = normalizeBag(character.bag);
+  character.bag[activeEditor.categoryKey].splice(activeEditor.index, 1);
+  markDirty();
+  setEditDialog(false);
+  renderAll();
+}
+
 function applyEditor() {
   if (!activeEditor) return;
 
   if (activeEditor.type === "equipment") {
     applyEquipmentEditor();
-  } else {
+  } else if (activeEditor.type === "skill") {
     applySkillEditor();
+  } else if (activeEditor.type === "bag") {
+    applyBagItemEditor();
   }
 
   markDirty();
@@ -969,6 +1084,44 @@ function bindEditors() {
     openSkillEditor(Number(card.dataset.skillIndex));
   });
 
+  document.getElementById("bagToolbar").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-bag-add]");
+    if (!button || !isGmMode) return;
+    openBagItemEditor(button.dataset.bagAdd, null);
+  });
+
+  document.getElementById("bagList").addEventListener("click", (event) => {
+    const card = event.target.closest(".bag-card");
+    if (!card || !isGmMode) return;
+    openBagItemEditor(card.dataset.bagCategory, Number(card.dataset.bagIndex));
+  });
+
+  document.getElementById("bagList").addEventListener("keydown", (event) => {
+    if (!["Enter", " "].includes(event.key)) return;
+    const card = event.target.closest(".bag-card");
+    if (!card || !isGmMode) return;
+    event.preventDefault();
+    openBagItemEditor(card.dataset.bagCategory, Number(card.dataset.bagIndex));
+  });
+
+  document.getElementById("bagWallet").addEventListener("input", (event) => {
+    const input = event.target.closest(".bag-money-input");
+    if (!input || !isGmMode) return;
+    const character = getCharacter();
+    character.bag = normalizeBag(character.bag);
+    character.bag.money = Math.max(0, normalizeNumber(input.value));
+    markDirty();
+  });
+
+  document.getElementById("bagWallet").addEventListener("change", (event) => {
+    const input = event.target.closest(".bag-money-input");
+    if (!input || !isGmMode) return;
+    const character = getCharacter();
+    character.bag = normalizeBag(character.bag);
+    character.bag.money = Math.max(0, normalizeNumber(input.value));
+    renderBag();
+  });
+
   document.getElementById("addOptionButton").addEventListener("click", addEditorOption);
   document.getElementById("editCloseButton").addEventListener("click", () => setEditDialog(false));
   document.getElementById("editCancelButton").addEventListener("click", () => setEditDialog(false));
@@ -983,6 +1136,11 @@ function bindEditors() {
     const removeButton = event.target.closest(".option-remove");
     if (!removeButton) return;
     removeButton.closest(".option-row").remove();
+  });
+
+  document.getElementById("editFields").addEventListener("click", (event) => {
+    if (!event.target.closest("#deleteBagItemButton")) return;
+    deleteBagItem();
   });
 
   document.getElementById("editForm").addEventListener("submit", (event) => {

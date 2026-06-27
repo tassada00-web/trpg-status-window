@@ -39,7 +39,9 @@ body {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
 }
 
@@ -250,7 +252,9 @@ h2 {
 .gm-close,
 .mini-action,
 .secondary-action,
-.icon-action {
+.icon-action,
+.danger-action,
+.bag-add-button {
   border: 0;
   border-radius: 6px;
   font-weight: 900;
@@ -388,6 +392,7 @@ h2 {
 }
 
 .edit-field input,
+.edit-field select,
 .edit-field textarea,
 .option-row input,
 .option-row select {
@@ -437,6 +442,15 @@ h2 {
   min-height: 34px;
   background: #f2e6df;
   color: var(--ink);
+}
+
+.danger-action {
+  width: fit-content;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid rgba(181, 56, 88, 0.24);
+  background: rgba(181, 56, 88, 0.12);
+  color: var(--red-deep);
 }
 
 .mini-action {
@@ -775,6 +789,50 @@ h2 {
   text-align: right;
 }
 
+.bag-money-control {
+  display: grid;
+  grid-template-columns: minmax(90px, 130px) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.bag-money-input {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid #d7c8bf;
+  border-radius: 6px;
+  padding: 0 10px;
+  background: #fff;
+  color: var(--ink);
+  text-align: right;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.bag-money-unit {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.bag-toolbar {
+  display: flex;
+  justify-content: end;
+  min-height: 40px;
+  margin-bottom: 12px;
+}
+
+.bag-toolbar:empty {
+  display: none;
+}
+
+.bag-add-button {
+  min-height: 38px;
+  padding: 0 12px;
+  background: var(--ink);
+  color: #fff;
+}
+
 .bag-categories {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -843,14 +901,17 @@ h2 {
 }
 
 .gear-card.is-editable,
-.skill-card.is-editable {
+.skill-card.is-editable,
+.bag-card.is-editable {
   cursor: pointer;
 }
 
 .gear-card.is-editable:hover,
 .gear-card.is-editable:focus-visible,
 .skill-card.is-editable:hover,
-.skill-card.is-editable:focus-visible {
+.skill-card.is-editable:focus-visible,
+.bag-card.is-editable:hover,
+.bag-card.is-editable:focus-visible {
   border-color: rgba(181, 56, 88, 0.42);
   box-shadow: 0 10px 28px rgba(181, 56, 88, 0.12);
   outline: none;
