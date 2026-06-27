@@ -689,7 +689,7 @@ function renderBag() {
 
   document.getElementById("bagList").innerHTML = items.length
     ? items
-        .map((item) => {
+        .map((item, index) => {
           const quantity = item.quantity !== 1 ? `<span class="bag-quantity">x${item.quantity}</span>` : "";
           const tags = (item.tags || []).map((tag) => `<span class="skill-tag">${escapeHtml(tag)}</span>`).join("");
           return `
