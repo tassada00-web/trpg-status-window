@@ -24,6 +24,40 @@ const BAG_CATEGORIES = [
   { key: "quest", label: "특수(퀘스트)" },
 ];
 
+const RIA_BAG = {
+  money: 0,
+  equipment: [
+    { name: "가죽 주머니", note: "무언가 담을 수 있다.", tags: ["가방"] },
+    { name: "고블린 대장 몽둥이(부실해지기시작)", note: "+3데미지\n기습하는 경우 기절" },
+    { name: "가죽 손목 보호대", note: "낡았지만 튼튼한 가죽 보호대. 착용 시 방어력 소폭 상승" },
+    { name: "어느 주인 없는 여자 속옷", note: "장착/쓰레기" },
+    { name: "여성용 경량 가죽 갑옷", note: "가슴과 복부를 보호하는 가죽 갑옷. 찢어진 부분이 있지만 수선하면 사용할 수 있습니다." },
+    { name: "모험가 부츠", note: "튼튼한 가죽 부츠." },
+    { name: "소드 오프 샷건", note: "근접사격 2발 소모. 힘다이스 25% 이하 시 넘어짐 자신에게 부여" },
+  ],
+  consumables: [
+    { name: "밧줄", note: "무언가 묶을 수 있다." },
+    { name: "정체불명의 열쇠", note: "녹슬었지만 튼튼해 보임(폐광)" },
+    { name: "소형 마나 포션", quantity: 1, note: "푸른색 액체가 담긴 작은 유리병. MP 15 회복" },
+    { name: "여행자용 건빵", note: "딱딱하게 굳은 건빵 두 조각. 비상 식량" },
+    { name: "야수 각성 주사기", quantity: 2, note: "보라색 액체가 든 주사기. 사용 시 일시적으로 힘과 민첩이 폭발적으로 상승하지만, 4턴 후 고통 및 탈진 부여" },
+    { name: "미완성 주문서(환각 쾌락 강화 - 사용 불가)" },
+    { name: "조악한 환각 최음제", quantity: 1 },
+  ],
+  materials: [
+    { name: "거친 가죽 조각", quantity: 2, note: "재봉 기초 재료" },
+    { name: "열쇠 꾸러미", note: "최면술사에서 획득" },
+    { name: "화염 탄알", quantity: 10, note: "6데미지+지속화염" },
+    { name: "강철 탄알", quantity: 35, note: "10데미지" },
+    { name: "녹슨 탄알", quantity: 4, note: "6데미지" },
+    { name: "은반지", note: "단순한 디자인의 은반지. 안쪽에 이니셜 'J & M'이 새겨져 있습니다. 상점 판매가 약 40페니 예상" },
+    { name: "구겨진 편지", note: "피와 흙으로 얼룩져 내용을 알아보기 힘듭니다. '...광산... 비밀 입구... 조심...'이라는 단어만 간신히 읽을 수 있습니다." },
+    { name: "이상한 지도 조각", note: "피가 묻어 잘 보이지 않지만, 숲 안쪽의 특정 지점을 표시한 듯한 낡은 지도 조각입니다." },
+    { name: "고블린의 보물 지도 조각 A", note: "조교병이 숨기고 있던 낡은 지도 조각. 다른 조각들과 합치면 고블린 소굴 깊은 곳에 숨겨진 '무언가'의 위치를 알 수 있습니다." },
+  ],
+  quest: [],
+};
+
 const CHARACTERS = [
   {
     id: "ria",
@@ -71,10 +105,7 @@ const CHARACTERS = [
       { slot: "보조무기", name: "날이 잘 선 손도끼 (20/15)", stats: { offhandDamage: 3 }, durability: { max: 20, current: 15 } },
     ],
     bag: {
-      equipment: [],
-      consumables: [],
-      materials: [],
-      quest: [],
+      ...RIA_BAG,
     },
     skills: [
       { name: "총사", body: "힘다이스 없이 탄알효과만 발동", tags: ["직업"] },
@@ -138,6 +169,7 @@ const CHARACTERS = [
       { slot: "보조무기", name: "", stats: {}, durability: null },
     ],
     bag: {
+      money: 0,
       equipment: [],
       consumables: [],
       materials: [],
@@ -217,12 +249,29 @@ function normalizeBagItem(item) {
 }
 
 function normalizeBag(bag = {}) {
-  return Object.fromEntries(
-    BAG_CATEGORIES.map((category) => [
-      category.key,
-      Array.isArray(bag[category.key]) ? bag[category.key].map(normalizeBagItem) : [],
-    ]),
-  );
+  return {
+    money: Math.max(0, normalizeNumber(bag.money ?? bag.penny ?? bag.pennies, 0)),
+    ...Object.fromEntries(
+      BAG_CATEGORIES.map((category) => [
+        category.key,
+        Array.isArray(bag[category.key]) ? bag[category.key].map(normalizeBagItem) : [],
+      ]),
+    ),
+  };
+}
+
+function mergeBagData(baseBag, savedBag) {
+  const base = normalizeBag(baseBag);
+  const saved = normalizeBag(savedBag);
+  return {
+    money: saved.money || base.money,
+    ...Object.fromEntries(
+      BAG_CATEGORIES.map((category) => [
+        category.key,
+        saved[category.key].length ? saved[category.key] : base[category.key],
+      ]),
+    ),
+  };
 }
 
 function loadSavedData() {
@@ -252,7 +301,7 @@ function loadSavedData() {
       }
 
       if (savedCharacter.bag) {
-        character.bag = normalizeBag(savedCharacter.bag);
+        character.bag = mergeBagData(character.bag, savedCharacter.bag);
       }
 
       if (savedCharacter.skillBonuses) {
@@ -594,12 +643,21 @@ function renderSkills() {
     .join("");
 }
 
+function formatPenny(value) {
+  return `${new Intl.NumberFormat("ko-KR").format(Math.max(0, normalizeNumber(value)))} 페니`;
+}
+
 function renderBag() {
   const character = getCharacter();
   const bag = normalizeBag(character.bag);
   character.bag = bag;
   const activeCategory = BAG_CATEGORIES.find((category) => category.key === activeBagCategory) || BAG_CATEGORIES[0];
   const items = bag[activeCategory.key] || [];
+
+  document.getElementById("bagWallet").innerHTML = `
+    <span>소지금</span>
+    <strong>${formatPenny(bag.money)}</strong>
+  `;
 
   document.getElementById("bagCategories").innerHTML = BAG_CATEGORIES.map((category) => {
     const isActive = category.key === activeCategory.key;

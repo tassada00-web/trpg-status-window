@@ -748,6 +748,33 @@ h2 {
   background: var(--bar-tone);
 }
 
+.bag-wallet {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 54px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(185, 141, 62, 0.34);
+  border-radius: 8px;
+  background: rgba(185, 141, 62, 0.13);
+}
+
+.bag-wallet span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.bag-wallet strong {
+  color: var(--red-deep);
+  font-size: 1.2rem;
+  font-weight: 950;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
 .bag-categories {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -943,6 +970,7 @@ h2 {
   margin: 10px 0 0;
   color: #363b49;
   line-height: 1.55;
+  white-space: pre-line;
   word-break: keep-all;
   overflow-wrap: anywhere;
 }
