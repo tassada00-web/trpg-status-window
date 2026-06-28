@@ -32,6 +32,9 @@
         </div>
 
         <div class="top-actions">
+          <button class="home-button" id="homeButton" type="button" hidden>
+            목록
+          </button>
           <nav class="tabs" role="tablist" aria-label="상태창 메뉴">
             <button class="tab is-active" type="button" role="tab" aria-selected="true" aria-controls="overviewPanel" data-tab="overview">
               상태
@@ -57,7 +60,15 @@
         </div>
       </header>
 
-      <section class="dashboard" aria-labelledby="characterName">
+      <section class="landing-page" id="landingPage" aria-labelledby="landingHeading">
+        <div class="landing-heading">
+          <p class="section-kicker">Characters</p>
+          <h2 id="landingHeading">캐릭터 목록</h2>
+        </div>
+        <div class="home-character-list" id="homeCharacterList"></div>
+      </section>
+
+      <section class="dashboard" aria-labelledby="characterName" hidden>
         <aside class="portrait-panel">
           <div class="portrait-frame">
             <img id="portraitImage" src="./assets/ria.png" alt="리아 캐릭터 프로필" />

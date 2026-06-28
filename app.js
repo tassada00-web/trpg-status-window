@@ -284,7 +284,7 @@ const CHARACTERS = [
 const savedState = loadSavedData();
 const characterState = Object.fromEntries(CHARACTERS.map((character) => [character.id, createState(character)]));
 applySavedState(savedState);
-let activeCharacterId = CHARACTERS[0].id;
+let activeCharacterId = null;
 let activeBagCategory = BAG_CATEGORIES[0].key;
 let isGmMode = false;
 let activeEditor = null;
@@ -468,11 +468,12 @@ function showSaveStatus(message) {
 }
 
 function getCharacter() {
-  return CHARACTERS.find((character) => character.id === activeCharacterId) || CHARACTERS[0];
+  return CHARACTERS.find((character) => character.id === activeCharacterId) || null;
 }
 
 function getState() {
-  return characterState[getCharacter().id];
+  const character = getCharacter();
+  return character ? characterState[character.id] : null;
 }
 
 function sumStats(items) {
@@ -485,10 +486,11 @@ function sumStats(items) {
 }
 
 function getTotal(stat, character = getCharacter()) {
-  const state = characterState[character.id][stat.key];
+  if (!character) return 0;
+  const state = characterState[character.id]?.[stat.key] || { increase: 0, decrease: 0 };
   const gear = sumStats(character.equipment)[stat.key] || 0;
   const skill = character.skillBonuses[stat.key] || 0;
-  return character.bases[stat.key] + gear + skill + state.increase - state.decrease;
+  return (character.bases[stat.key] || 0) + gear + skill + state.increase - state.decrease;
 }
 
 function formatSigned(value) {
@@ -509,6 +511,19 @@ function setSidebar(open) {
   document.getElementById("characterSidebar").classList.toggle("is-open", open);
   document.getElementById("characterSidebar").setAttribute("aria-hidden", open ? "false" : "true");
   document.getElementById("sidebarToggle").setAttribute("aria-expanded", open ? "true" : "false");
+}
+
+function selectCharacter(characterId) {
+  if (!CHARACTERS.some((character) => character.id === characterId)) return;
+  activeCharacterId = characterId;
+  activeBagCategory = BAG_CATEGORIES[0].key;
+  renderAll();
+}
+
+function showHome() {
+  activeCharacterId = null;
+  setSidebar(false);
+  renderAll();
 }
 
 function setGmDialog(open) {
@@ -552,8 +567,54 @@ function renderCharacterButtons() {
   }).join("");
 }
 
+function renderHomeCharacters() {
+  document.getElementById("homeCharacterList").innerHTML = CHARACTERS.map((character) => {
+    const hp = getTotal({ key: "hp" }, character);
+    const stamina = getTotal({ key: "stamina" }, character);
+    const magicUses = getMagicUses(character);
+    return `
+      <button class="home-character-card" type="button" data-character="${character.id}" aria-label="${escapeHtml(character.name)} 상태창 열기">
+        <span class="home-card-image">
+          <img src="${escapeHtml(character.image)}" alt="${escapeHtml(character.name)} 프로필" />
+        </span>
+        <span class="home-card-body">
+          <span class="home-card-title">
+            <span class="home-card-sigil">${escapeHtml(character.sigil)}</span>
+            <strong>${escapeHtml(character.name)}</strong>
+          </span>
+          <span class="home-card-meta">
+            <span>${escapeHtml(character.role)}</span>
+            <span>${escapeHtml(character.tendency)}</span>
+          </span>
+          <span class="home-card-stats">
+            <span>체력 ${hp}/${character.bases.hp}</span>
+            <span>SP ${stamina}/${character.bases.stamina}</span>
+            <span>마법 ${magicUses}</span>
+          </span>
+        </span>
+      </button>
+    `;
+  }).join("");
+}
+
+function renderShellState() {
+  const hasCharacter = Boolean(getCharacter());
+  document.body.classList.toggle("home-view", !hasCharacter);
+  document.getElementById("landingPage").hidden = hasCharacter;
+  document.querySelector(".dashboard").hidden = !hasCharacter;
+  document.querySelector(".tabs").hidden = !hasCharacter;
+  document.getElementById("homeButton").hidden = !hasCharacter;
+}
+
 function renderIdentity() {
   const character = getCharacter();
+  if (!character) {
+    document.title = "TRPG 상태창";
+    document.getElementById("characterName").textContent = "캐릭터 목록";
+    document.getElementById("characterSigil").textContent = "TR";
+    return;
+  }
+
   document.title = `${character.name} 상태창`;
   document.getElementById("characterName").textContent = character.name;
   document.getElementById("characterSigil").textContent = character.sigil;
@@ -569,8 +630,7 @@ function renderResources() {
   const character = getCharacter();
   const hp = getTotal({ key: "hp" }, character);
   const stamina = getTotal({ key: "stamina" }, character);
-  const intelligence = getTotal({ key: "intelligence" }, character);
-  const magicUses = Math.floor(5 + intelligence / 5);
+  const magicUses = getMagicUses(character);
   const resources = [
     { label: "체력", value: hp, max: character.bases.hp, tone: "#b53858", soft: "#f09aae" },
     { label: "스테미나", value: stamina, max: character.bases.stamina, tone: "#3f8d6a", soft: "#8fd0b4" },
@@ -594,13 +654,18 @@ function renderResources() {
     .join("");
 }
 
+function getMagicUses(character = getCharacter()) {
+  if (!character) return 0;
+  return Math.floor(5 + getTotal({ key: "intelligence" }, character) / 5);
+}
+
 function renderCombatStrip() {
   const character = getCharacter();
   const metrics = [
     ["주무기", getTotal({ key: "damage" }, character)],
     ["보조무기", getTotal({ key: "offhandDamage" }, character)],
     ["방어력", getTotal({ key: "armor" }, character)],
-    ["마법", Math.floor(5 + getTotal({ key: "intelligence" }, character) / 5)],
+    ["마법", getMagicUses(character)],
   ];
 
   document.getElementById("combatStrip").innerHTML = metrics
@@ -1059,7 +1124,11 @@ function applyEditor() {
 function renderAll() {
   renderGmState();
   renderCharacterButtons();
+  renderHomeCharacters();
+  renderShellState();
   renderIdentity();
+  if (!getCharacter()) return;
+
   renderResources();
   renderCombatStrip();
   renderStats();
@@ -1103,10 +1172,15 @@ function bindSidebar() {
   document.getElementById("characterButtons").addEventListener("click", (event) => {
     const button = event.target.closest(".character-button");
     if (!button) return;
-    activeCharacterId = button.dataset.character;
-    renderAll();
+    selectCharacter(button.dataset.character);
     setSidebar(false);
   });
+  document.getElementById("homeCharacterList").addEventListener("click", (event) => {
+    const button = event.target.closest(".home-character-card");
+    if (!button) return;
+    selectCharacter(button.dataset.character);
+  });
+  document.getElementById("homeButton").addEventListener("click", showHome);
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       setSidebar(false);
