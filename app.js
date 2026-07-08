@@ -231,7 +231,7 @@ const CHARACTERS = [
     },
     skillBonuses: {},
     initialState: {
-      hp: { decrease: 0 },
+      hp: { decrease: 5 },
       stamina: { decrease: 0 },
     },
     equipment: [
@@ -254,7 +254,7 @@ const CHARACTERS = [
     skills: [
       {
         name: "여우비lv2",
-        body: "힐진화. 주문횟수 1 소모. 지능다이스로 자신 포함 모든 아군 회복 및 적 전체 피해 +2 (정밀 vs 속도).",
+        body: "힐진화. 주문횟수 1 소모. 지능다이스로 (자신 포함 모든 아군 100% 회복 및 적 전체 50% 피해) +2 (정밀 vs 속도).",
         tags: ["마법 1"],
       },
       {
