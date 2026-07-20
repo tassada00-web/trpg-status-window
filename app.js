@@ -79,6 +79,20 @@ const HAYUL_BAG = {
   ],
 };
 
+const SIA_BAG = {
+  money: 0,
+  equipment: [
+    { name: "도둑 도구 세트", note: "자물쇠·함정 해제 판정 +2" },
+    { name: "갈고리와 가는 밧줄", note: "등반·침입용" },
+    { name: "투척 단검", quantity: 3, note: "원거리 피해 +2, 사용 후 회수 가능", tags: ["장비 중"] },
+  ],
+  consumables: [
+    { name: "연막탄", quantity: 2, note: "주변 시야 차단, 이탈 판정 +2" },
+  ],
+  materials: [],
+  quest: [],
+};
+
 const CHARACTERS = [
   {
     id: "ria",
@@ -277,6 +291,63 @@ const CHARACTERS = [
         body: "인접 아군이 출혈 상태일 경우 회복 마법으로 출혈 1스택을 추가 제거.",
         tags: ["장비 효과"],
       },
+    ],
+  },
+  {
+    id: "sia",
+    name: "시아",
+    sigil: "시",
+    image: "./assets/sia.png",
+    role: "네코미미 도적 (침투·괴도)",
+    tendency: "미입력",
+    bases: {
+      hp: 25,
+      stamina: 25,
+      strength: 4,
+      vitality: 5,
+      speed: 8,
+      precision: 6,
+      intelligence: 6,
+      wisdom: 6,
+      charm: 7,
+      damage: 0,
+      offhandDamage: 0,
+      armor: 0,
+    },
+    baseLabels: {
+      damage: "x",
+      offhandDamage: "x",
+      armor: "x",
+    },
+    skillBonuses: {},
+    initialState: {
+      hp: { decrease: 0 },
+      stamina: { decrease: 0 },
+    },
+    equipment: [
+      { slot: "머리", name: "", stats: {}, durability: null },
+      { slot: "외투", name: "", stats: {}, durability: null },
+      { slot: "상의", name: "경량 도적복", stats: { armor: 2 }, durability: { max: 20, current: 20 } },
+      { slot: "하의", name: "", stats: {}, durability: null },
+      { slot: "신발", name: "부드러운 가죽 장화", stats: {}, durability: { max: 20, current: 20 } },
+      { slot: "장갑", name: "", stats: {}, durability: null },
+      { slot: "반지", name: "", stats: {}, durability: null },
+      { slot: "목걸이", name: "", stats: {}, durability: null },
+      { slot: "귀걸이", name: "", stats: {}, durability: null },
+      { slot: "팔찌", name: "", stats: {}, durability: null },
+      { slot: "주무기", name: "날렵한 단검", stats: { precision: 1, damage: 3 }, durability: { max: 20, current: 20 } },
+      { slot: "보조무기", name: "투척 단검 ×3", stats: { offhandDamage: 2 }, durability: null },
+    ],
+    bag: {
+      ...SIA_BAG,
+    },
+    skills: [
+      { name: "암습", body: "은신 중이거나 적이 다른 대상을 보고 있을 때 피해 +3.", tags: ["SP 4"] },
+      { name: "고양이 걸음", body: "한 턴 동안 이동·은신·회피 판정에 속도 +2.", tags: ["SP 3"] },
+      { name: "도둑의 손놀림", body: "소매치기·자물쇠·함정 해제 판정에 정밀 +2.", tags: ["패시브"] },
+      { name: "고양이의 감각", body: "기습과 숨은 적을 발견하는 지혜 판정 +2.", tags: ["패시브"] },
+      { name: "능청스러운 유혹", body: "매력 vs 지혜. 성공 시 적 1체의 다음 판정에 -2.", tags: ["SP 2"] },
+      { name: "장비 효과", body: "경량 도적복 방어력 +2. 가죽 장화 은신·착지 +1.", tags: ["장비 효과"] },
     ],
   },
 ];
