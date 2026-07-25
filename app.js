@@ -161,7 +161,7 @@ const CHARACTERS = [
     sigil: "루",
     image: "./assets/luna.png",
     role: "마나볼",
-    tendency: "미입력",
+    tendency: "쾌락주의",
     bases: {
       hp: 30,
       stamina: 30,
@@ -169,7 +169,7 @@ const CHARACTERS = [
       vitality: 6,
       speed: 6,
       precision: 6,
-      intelligence: 8,
+      intelligence: 10,
       wisdom: 6,
       charm: 9,
       damage: 0,
@@ -192,7 +192,7 @@ const CHARACTERS = [
     equipment: [
       { slot: "머리", name: "", stats: {}, durability: null },
       { slot: "외투", name: "", stats: {}, durability: null },
-      { slot: "상의", name: "로브", stats: {}, durability: null },
+      { slot: "상의", name: "로브", stats: {}, durability: { max: 15, current: 15 } },
       { slot: "하의", name: "", stats: {}, durability: null },
       { slot: "신발", name: "", stats: {}, durability: null },
       { slot: "장갑", name: "", stats: {}, durability: null },
@@ -211,10 +211,12 @@ const CHARACTERS = [
       quest: [],
     },
     skills: [
-      { name: "마나볼", body: "지능 결과값 +4", tags: ["마법 1", "공격"] },
-      { name: "올라타기", body: "민첩 다이스 1", tags: ["SP 2", "이동"] },
+      { name: "흡정", body: "정액을 체내에 받을 시, 지능 다이스. 결과값의 50%만큼 지능 숙련도 증가 (현재 45%, 필요 숙련도는 지능의 최대값).", tags: ["마법 1"] },
+      { name: "마나볼<1>", body: "지능 결과값 +4", tags: ["SP 2"] },
+      { name: "기승위", body: "민첩 다이스 +1 (리드권 있는 경우)", tags: ["SP 2"] },
       { name: "늑대 리듬 동조", body: "적 속도가 자신보다 빠를 때 받는 쾌락 데미지 +1, 동조 성공 시 매턴마다 1 SP 회복.", tags: ["회복", "동조"] },
-      { name: "야수의 정수(패시브)", body: "건강 +4, 속도 -3", tags: ["패시브", "능력치"] },
+      { name: "야수의 정수 (1단계)", body: "건강 +4, 속도 -3, 스테미나 -1 추가소모", tags: ["패시브", "능력치"] },
+      { name: "마조히스트 (3)", body: "폭력적 성향을 가진 적을 만날 경우 모든 능력치 -2, 받는 쾌감 +1", tags: ["패시브", "성향"] },
     ],
   },
   {
