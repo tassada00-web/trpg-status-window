@@ -92,339 +92,1713 @@ const SIA_BAG = {
 
 const CHARACTERS = [
   {
-    id: "ria",
-    name: "리아",
-    sigil: "리",
-    image: "./assets/ria.png",
-    role: "총사",
-    tendency: "냉정함",
-    bases: {
-      hp: 30,
-      stamina: 30,
-      strength: 6,
-      vitality: 6,
-      speed: 8,
-      precision: 7,
-      intelligence: 6,
-      wisdom: 6,
-      charm: 6,
-      damage: 0,
-      offhandDamage: 0,
-      armor: 0,
+    "id": "ria",
+    "name": "리아",
+    "sigil": "리",
+    "image": "./assets/ria.png",
+    "role": "총사",
+    "tendency": "냉정함",
+    "bases": {
+      "hp": 30,
+      "stamina": 30,
+      "strength": 6,
+      "vitality": 6,
+      "speed": 8,
+      "precision": 7,
+      "intelligence": 6,
+      "wisdom": 6,
+      "charm": 6,
+      "damage": 0,
+      "offhandDamage": 0,
+      "armor": 0
     },
-    baseLabels: {
-      damage: "x",
-      offhandDamage: "x",
-      armor: "x",
+    "baseLabels": {
+      "damage": "x",
+      "offhandDamage": "x",
+      "armor": "x"
     },
-    skillBonuses: {},
-    initialState: {
-      hp: { decrease: 0 },
-      stamina: { decrease: 9 },
+    "skillBonuses": {},
+    "initialState": {
+      "hp": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "stamina": {
+        "increase": 0,
+        "decrease": 9
+      },
+      "strength": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "vitality": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "speed": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "precision": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "intelligence": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "wisdom": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "charm": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "damage": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "offhandDamage": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "armor": {
+        "increase": 0,
+        "decrease": 0
+      }
     },
-    equipment: [
-      { slot: "머리", name: "", stats: {}, durability: null },
-      { slot: "외투", name: "탐험가의 망토", stats: { speed: 1 }, durability: { max: 10, current: null } },
-      { slot: "상의", name: "징 박힌 가죽 갑옷", stats: { speed: -1, armor: 4 }, durability: { max: 32, current: 32 } },
-      { slot: "하의", name: "팬티 스타킹", stats: {}, durability: { max: 5, current: 5 } },
-      { slot: "신발", name: "강화된 가죽 부츠", stats: { speed: 1, armor: 1 }, durability: { max: 30, current: 30 } },
-      { slot: "장갑", name: "가죽 장갑", stats: { precision: 1 }, durability: { max: 10, current: 10 } },
-      { slot: "반지", name: "신속의 반지", stats: { speed: 2 }, durability: null },
-      { slot: "목걸이", name: "", stats: {}, durability: null },
-      { slot: "귀걸이", name: "", stats: {}, durability: null },
-      { slot: "팔찌", name: "", stats: {}, durability: null },
-      { slot: "주무기", name: "개량형 강선 머스킷 (40/40)", stats: { speed: -1, damage: 8 }, durability: { max: 40, current: 40 } },
-      { slot: "보조무기", name: "날이 잘 선 손도끼 (20/15)", stats: { offhandDamage: 3 }, durability: { max: 20, current: 15 } },
-    ],
-    bag: {
-      ...RIA_BAG,
-    },
-    skills: [
-      { name: "총사", body: "힘다이스 없이 탄알효과만 발동", tags: ["직업"] },
-      { name: "개머리판 공격 1t", body: "힘 50% 값만큼 피해, 힘 값 2배 차이경우 넉백", tags: ["공격"] },
-      { name: "소매치기", body: "후퇴 판정 전투 종료 후 일부분 보상 획득", tags: ["탐색"] },
-      { name: "지형 활용 (1회 판정)", body: "주변 환경(장애물/나무/암석 등) 활용 시 회피 판정 +2", tags: ["회피", "+2"] },
-      { name: "방해 사격", body: "(정밀 vs 건강, SP 2 소모) 적 1체의 다음 2턴까지 행동에 -2", tags: ["SP 2", "디버프"] },
-      { name: "더블탭", body: "(SP 2 소모) 두번 공격 (스킬 개별 각각 사용가능) 명중률 -2", tags: ["SP 2", "공격"] },
-      { name: "탄알", body: "철제 탄알 31 / 8데미지", tags: ["소모품", "31"] },
-    ],
-  },
-  {
-    id: "luna",
-    name: "루나",
-    sigil: "루",
-    image: "./assets/luna.png",
-    role: "마나볼",
-    tendency: "쾌락주의",
-    bases: {
-      hp: 30,
-      stamina: 30,
-      strength: 6,
-      vitality: 6,
-      speed: 6,
-      precision: 6,
-      intelligence: 10,
-      wisdom: 6,
-      charm: 9,
-      damage: 0,
-      offhandDamage: 0,
-      armor: 0,
-    },
-    baseLabels: {
-      damage: "x",
-      offhandDamage: "x",
-      armor: "x",
-    },
-    skillBonuses: {
-      vitality: 4,
-      speed: -3,
-    },
-    initialState: {
-      hp: { decrease: 0 },
-      stamina: { decrease: 0 },
-    },
-    equipment: [
-      { slot: "머리", name: "", stats: {}, durability: null },
-      { slot: "외투", name: "", stats: {}, durability: null },
-      { slot: "상의", name: "로브", stats: {}, durability: { max: 15, current: 15 } },
-      { slot: "하의", name: "", stats: {}, durability: null },
-      { slot: "신발", name: "", stats: {}, durability: null },
-      { slot: "장갑", name: "", stats: {}, durability: null },
-      { slot: "반지", name: "", stats: {}, durability: null },
-      { slot: "목걸이", name: "", stats: {}, durability: null },
-      { slot: "귀걸이", name: "", stats: {}, durability: null },
-      { slot: "팔찌", name: "", stats: {}, durability: null },
-      { slot: "주무기", name: "완드", stats: { damage: 1 }, durability: null },
-      { slot: "보조무기", name: "", stats: {}, durability: null },
-    ],
-    bag: {
-      money: 0,
-      equipment: [],
-      consumables: [],
-      materials: [],
-      quest: [],
-    },
-    skills: [
-      { name: "흡정", body: "정액을 체내에 받을 시, 지능 다이스. 결과값의 50%만큼 지능 숙련도 증가 (현재 45%, 필요 숙련도는 지능의 최대값).", tags: ["마법 1", "숙련도"] },
-      { name: "마나볼<1>", body: "지능 결과값 +4", tags: ["SP 2", "공격"] },
-      { name: "기승위", body: "민첩 다이스 +1 (리드권 있는 경우) (SP:2)", tags: ["SP 2", "행동"] },
-      { name: "늑대 리듬 동조", body: "적의 속도가 자신보다 빠를 때 받는 쾌락 피해 +1. 전투 시작 시 속도 판정에 성공하면 전투가 끝날 때까지 자신의 턴 시작마다 SP 1을 회복한다.", tags: ["패시브", "회복"] },
-      { name: "야수의 정수 (1단계)", body: "항상 건강 +4, 속도 -3. 스테미나를 소비하는 행동의 소모량이 1 증가한다.", tags: ["패시브", "능력치"] },
-      { name: "마조히스트 (3)", body: "폭력적 성향의 적과 전투 중 모든 판정에 -2. 받는 쾌락 피해가 1 증가한다.", tags: ["패시브", "상태"] },
-    ],
-  },
-  {
-    id: "bom-hayul",
-    name: "봄하율",
-    sigil: "봄",
-    image: "./assets/bom-hayul.png",
-    role: "회복 마법사",
-    tendency: "외유내강",
-    bases: {
-      hp: 30,
-      stamina: 30,
-      strength: 6,
-      vitality: 6,
-      speed: 6,
-      precision: 6,
-      intelligence: 6,
-      wisdom: 6,
-      charm: 6,
-      damage: 0,
-      offhandDamage: 0,
-      armor: 0,
-    },
-    baseLabels: {
-      damage: "x",
-      offhandDamage: "x",
-      armor: "x",
-    },
-    skillBonuses: {},
-    initialState: {
-      hp: { decrease: 5 },
-      stamina: { decrease: 0 },
-    },
-    equipment: [
-      { slot: "머리", name: "", stats: {}, durability: null },
-      { slot: "외투", name: "", stats: {}, durability: null },
-      { slot: "상의", name: "프릴드레스", stats: {}, durability: { max: 15, current: 15 } },
-      { slot: "하의", name: "", stats: {}, durability: null },
-      { slot: "신발", name: "", stats: {}, durability: null },
-      { slot: "장갑", name: "", stats: {}, durability: null },
-      { slot: "반지", name: "", stats: {}, durability: null },
-      { slot: "목걸이", name: "", stats: {}, durability: null },
-      { slot: "귀걸이", name: "", stats: {}, durability: null },
-      { slot: "팔찌", name: "", stats: {}, durability: null },
-      { slot: "주무기", name: "거울 니샤 +1 (붉은 박쥐 마석 인첸트)", stats: { damage: 1 }, durability: null },
-      { slot: "보조무기", name: "", stats: {}, durability: null },
-    ],
-    bag: {
-      ...HAYUL_BAG,
-    },
-    skills: [
+    "equipment": [
       {
-        name: "여우비lv2",
-        body: "주문횟수 1 소모. 지능다이스로 아군 회복 및 적 전체 피해 +2.",
-        tags: ["마법 1"],
+        "slot": "머리",
+        "name": "",
+        "stats": {},
+        "durability": null
       },
       {
-        name: "거울 파편 장벽",
-        body: "주문횟수 1 소모. 아군 전체가 공격받을 때 지능결과 /2 만큼 1회 차단.",
-        tags: ["마법 1"],
+        "slot": "외투",
+        "name": "탐험가의 망토",
+        "stats": {
+          "speed": 1
+        },
+        "durability": {
+          "max": 10,
+          "current": null
+        }
       },
       {
-        name: "수호의 빛",
-        body: "패시브. 아군 치명타 피격 시 전투당 1회 장벽 자동 발동.",
-        tags: ["패시브"],
+        "slot": "상의",
+        "name": "징 박힌 가죽 갑옷",
+        "stats": {
+          "speed": -1,
+          "armor": 4
+        },
+        "durability": {
+          "max": 32,
+          "current": 32
+        }
       },
       {
-        name: "거울 니샤 효과",
-        body: "회복 마법 효과량 +2. 매 턴 시작 시 본인 체력 1 자동 회복.",
-        tags: ["장비 효과"],
+        "slot": "하의",
+        "name": "팬티 스타킹",
+        "stats": {},
+        "durability": {
+          "max": 5,
+          "current": 5
+        }
       },
       {
-        name: "거울 니샤 효과",
-        body: "인접 아군이 출혈 상태일 경우 회복 마법으로 출혈 1스택을 추가 제거.",
-        tags: ["장비 효과"],
+        "slot": "신발",
+        "name": "강화된 가죽 부츠",
+        "stats": {
+          "speed": 1,
+          "armor": 1
+        },
+        "durability": {
+          "max": 30,
+          "current": 30
+        }
       },
+      {
+        "slot": "장갑",
+        "name": "가죽 장갑",
+        "stats": {
+          "precision": 1
+        },
+        "durability": {
+          "max": 10,
+          "current": 10
+        }
+      },
+      {
+        "slot": "반지",
+        "name": "신속의 반지",
+        "stats": {
+          "speed": 2
+        },
+        "durability": null
+      },
+      {
+        "slot": "목걸이",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "귀걸이",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "팔찌",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "주무기",
+        "name": "개량형 강선 머스킷 (40/40)",
+        "stats": {
+          "speed": -1,
+          "damage": 8
+        },
+        "durability": {
+          "max": 40,
+          "current": 40
+        }
+      },
+      {
+        "slot": "보조무기",
+        "name": "날이 잘 선 손도끼 (20/15)",
+        "stats": {
+          "offhandDamage": 3
+        },
+        "durability": {
+          "max": 20,
+          "current": 15
+        }
+      }
     ],
-  },
-  {
-    id: "sia",
-    name: "시아",
-    sigil: "시",
-    image: "./assets/sia.png",
-    role: "네코미미 도적",
-    tendency: "미입력",
-    bases: {
-      hp: 25,
-      stamina: 25,
-      strength: 4,
-      vitality: 5,
-      speed: 8,
-      precision: 6,
-      intelligence: 6,
-      wisdom: 6,
-      charm: 7,
-      damage: 0,
-      offhandDamage: 0,
-      armor: 0,
-    },
-    baseLabels: {
-      damage: "x",
-      offhandDamage: "x",
-      armor: "x",
-    },
-    skillBonuses: {},
-    initialState: {
-      hp: { decrease: 0 },
-      stamina: { decrease: 0 },
-    },
-    equipment: [
-      { slot: "머리", name: "", stats: {}, durability: null },
-      { slot: "외투", name: "", stats: {}, durability: null },
-      { slot: "상의", name: "경량 도적복", stats: { armor: 2 }, durability: { max: 20, current: 20 } },
-      { slot: "하의", name: "", stats: {}, durability: null },
-      { slot: "신발", name: "부드러운 가죽 장화", stats: {}, durability: { max: 20, current: 20 } },
-      { slot: "장갑", name: "", stats: {}, durability: null },
-      { slot: "반지", name: "", stats: {}, durability: null },
-      { slot: "목걸이", name: "", stats: {}, durability: null },
-      { slot: "귀걸이", name: "", stats: {}, durability: null },
-      { slot: "팔찌", name: "", stats: {}, durability: null },
-      { slot: "주무기", name: "날렵한 단검", stats: { precision: 1, damage: 3 }, durability: { max: 20, current: 20 } },
-      { slot: "보조무기", name: "투척 단검 ×3", stats: { offhandDamage: 2 }, durability: null },
-    ],
-    bag: {
-      ...SIA_BAG,
-    },
-    skills: [
-      { name: "암습", body: "은신 중이거나 적이 다른 대상을 보고 있을 때 피해 +3.", tags: ["SP 4", "공격"] },
-      { name: "고양이 걸음", body: "한 턴 동안 이동·은신·회피 판정에 속도 +2.", tags: ["SP 3", "이동"] },
-      { name: "도둑의 손놀림", body: "소매치기·자물쇠·함정 해제 판정에 정밀 +2.", tags: ["패시브", "탐색"] },
-      { name: "고양이의 감각", body: "기습과 숨은 적을 발견하는 지혜 판정 +2.", tags: ["패시브", "탐색"] },
-      { name: "능청스러운 유혹", body: "매력 vs 지혜. 성공 시 적 1체의 다음 판정에 -2.", tags: ["SP 2", "디버프"] },
-    ],
-  },
-  {
-    id: "yuwol",
-    name: "유월",
-    sigil: "유",
-    image: "./assets/yuwol.png",
-    role: "암살자",
-    tendency: "호기심",
-    bases: {
-      hp: 35,
-      stamina: 35,
-      strength: 6,
-      vitality: 7,
-      speed: 8,
-      precision: 6,
-      intelligence: 5,
-      wisdom: 7,
-      charm: 6,
-      damage: 0,
-      offhandDamage: 0,
-      armor: 0,
-    },
-    baseLabels: {
-      damage: "x",
-      offhandDamage: "x",
-      armor: "x",
-    },
-    skillBonuses: {},
-    initialState: {
-      hp: { decrease: 5 },
-      stamina: { decrease: 5 },
-      speed: { increase: 1 },
-    },
-    equipment: [
-      { slot: "머리", name: "", stats: {}, durability: null },
-      { slot: "외투", name: "밤까마귀의 깃털 망토", stats: { speed: 1 }, durability: { max: 10, current: 10 } },
-      { slot: "상의", name: "뒷골목의 그림자 슈트", stats: { speed: 1, armor: 2 }, durability: { max: 20, current: 15 } },
-      { slot: "하의", name: "", stats: {}, durability: null },
-      { slot: "신발", name: "민첩의 가죽 장화", stats: { speed: 2 }, durability: null },
-      { slot: "장갑", name: "", stats: {}, durability: null },
-      { slot: "반지", name: "", stats: {}, durability: null },
-      { slot: "목걸이", name: "", stats: {}, durability: null },
-      { slot: "귀걸이", name: "", stats: {}, durability: null },
-      { slot: "팔찌", name: "", stats: {}, durability: null },
-      { slot: "주무기", name: "암살자용 단검", stats: { damage: 2 }, durability: null },
-      { slot: "보조무기", name: "톱니 단검", stats: { offhandDamage: 3 }, durability: null },
-    ],
-    bag: {
-      money: 0,
-      equipment: [
-        { name: "낡은 롱소드", note: "데미지 +1" },
-        { name: "낡은 나무 방패", note: "내구도 19/20. 방어 시 피해량이 음수가 아닌 경우 내구도 차감. 받는 피해 -1" },
+    "bag": {
+      "money": 0,
+      "equipment": [
+        {
+          "name": "가죽 주머니",
+          "note": "무언가 담을 수 있다.",
+          "tags": [
+            "가방"
+          ]
+        },
+        {
+          "name": "고블린 대장 몽둥이(부실해지기시작)",
+          "note": "+3데미지\n기습하는 경우 기절"
+        },
+        {
+          "name": "가죽 손목 보호대",
+          "note": "낡았지만 튼튼한 가죽 보호대. 착용 시 방어력 소폭 상승"
+        },
+        {
+          "name": "여성용 경량 가죽 갑옷",
+          "note": "가슴과 복부를 보호하는 가죽 갑옷. 찢어진 부분이 있지만 수선하면 사용할 수 있습니다."
+        },
+        {
+          "name": "모험가 부츠",
+          "note": "튼튼한 가죽 부츠."
+        },
+        {
+          "name": "소드 오프 샷건",
+          "note": "근접사격 2발 소모. 힘다이스 25% 이하 시 넘어짐 자신에게 부여"
+        }
       ],
-      consumables: [
-        { name: "황동 램프", quantity: 1, note: "튼튼한 황동으로 만든 휴대용 램프. 기름을 넣어 불을 밝힌다. 빛의 범위는 중간 정도." },
-        { name: "랜턴 기름 (소)", quantity: 3, note: "램프에 넣을 수 있는 정제된 기름. 한 통으로 약 4시간 동안 불을 밝힐 수 있다." },
-        { name: "질긴 삼베 붕대", quantity: 2, note: "거칠지만 질긴 붕대. 지혈용으로 쓰인다. 사용 시 출혈 상태 제거." },
-        { name: "여행용 육포", quantity: 2, note: "짭짤하게 간이 된 육포. 보존성이 뛰어나고 열량이 높다. 사용 시 스테미나 +10 회복." },
-        { name: "등반용 로프", quantity: 1, note: "10미터 길이의 튼튼한 밧줄. 절벽을 오르거나 함정을 건널 때 유용하다." },
-        { name: "부싯돌 세트", quantity: 1, note: "불을 피우기 위한 도구. 젖어도 사용할 수 있다." },
-        { name: "하급 상처 치료제", quantity: 2, note: "사용 시 HP 10 회복." },
-        { name: "연막탄", quantity: 1, note: "사용 시 도주 성공률 증가 및 다음 턴 은신 판정 보너스." },
-        { name: "상급 마나 회복 물약", quantity: 1, note: "주문 횟수 75% 회복." },
+      "consumables": [
+        {
+          "name": "밧줄",
+          "note": "무언가 묶을 수 있다."
+        },
+        {
+          "name": "정체불명의 열쇠",
+          "note": "녹슬었지만 튼튼해 보임(폐광)"
+        },
+        {
+          "name": "소형 마나 포션",
+          "quantity": 1,
+          "note": "푸른색 액체가 담긴 작은 유리병. MP 15 회복"
+        },
+        {
+          "name": "여행자용 건빵",
+          "note": "딱딱하게 굳은 건빵 두 조각. 비상 식량"
+        },
+        {
+          "name": "야수 각성 주사기",
+          "quantity": 2,
+          "note": "사용 시 일시적으로 힘과 민첩이 폭발적으로 상승하지만, 4턴 후 고통 및 탈진 부여"
+        },
+        {
+          "name": "미완성 주문서(환각 쾌락 강화 - 사용 불가)"
+        },
+        {
+          "name": "조악한 환각 최음제",
+          "quantity": 1
+        }
       ],
-      materials: [
-        { name: "쥐고기", quantity: 6, note: "맛없겠지만 배고픔을 위해 챙겨야 하는 음식 재료." },
+      "materials": [
+        {
+          "name": "거친 가죽 조각",
+          "quantity": 2,
+          "note": "재봉 기초 재료"
+        },
+        {
+          "name": "열쇠 꾸러미",
+          "note": "최면술사에서 획득"
+        },
+        {
+          "name": "화염 탄알",
+          "quantity": 10,
+          "note": "6데미지+지속화염"
+        },
+        {
+          "name": "강철 탄알",
+          "quantity": 35,
+          "note": "10데미지"
+        },
+        {
+          "name": "녹슨 탄알",
+          "quantity": 4,
+          "note": "6데미지"
+        },
+        {
+          "name": "은반지",
+          "note": "단순한 디자인의 은반지. 안쪽에 이니셜 'J & M'이 새겨져 있습니다. 상점 판매가 약 40페니 예상"
+        },
+        {
+          "name": "고블린의 보물 지도 조각 A",
+          "note": "다른 조각들과 합치면 고블린 소굴 깊은 곳에 숨겨진 무언가의 위치를 알 수 있습니다."
+        }
       ],
-      quest: [],
+      "quest": []
     },
-    skills: [
-      { name: "완벽주의자", body: "양손에 각각 장비가 있을 경우 행동 다이스 눈 +1.", tags: ["패시브"] },
-      { name: "허당주의자", body: "양손에 각각 장비가 있을 경우 행동 다이스 눈 -1.", tags: ["패시브"] },
-      { name: "가벼운 발걸음", body: "은신 상태에서 속도 결과 +1.", tags: ["패시브"] },
-      { name: "뒷골목의 그림자 슈트", body: "짙은 회색 가죽으로 만든 타이트한 슈트. 방어력 +2, 은신 상태 시 속도 +1. 내구도 15/20.", tags: ["패시브", "장비 효과"] },
-      { name: "암살자용 단검", body: "데미지 +2. 기습 시 첫 공격 데미지 +2.", tags: ["패시브", "장비 효과"] },
-      { name: "톱니 단검", body: "데미지(보조무기) +3. [출혈]은 매 턴 스택당 데미지 1. 대실패 시 자신에게 [출혈]을 부여합니다.", tags: ["패시브", "장비 효과"] },
-      { name: "밤까마귀의 깃털 망토", body: "검은 깃털 장식이 달린 망토. 움직일 때마다 깃털이 흩날리며 시선을 분산시킵니다. 속도 +1. 내구도 10/10.", tags: ["패시브", "장비 효과"] },
-      { name: "민첩의 가죽 장화", body: "속도 +2.", tags: ["패시브", "장비 효과"] },
+    "skills": [
+      {
+        "name": "총사",
+        "body": "힘다이스 없이 탄알효과만 발동",
+        "tags": [
+          "직업"
+        ],
+        "stat": "precision"
+      },
+      {
+        "name": "개머리판 공격 1t",
+        "body": "힘 50% 값만큼 피해, 힘 값 2배 차이경우 넉백",
+        "tags": [
+          "공격"
+        ],
+        "stat": "strength"
+      },
+      {
+        "name": "소매치기",
+        "body": "후퇴 판정 전투 종료 후 일부분 보상 획득",
+        "tags": [
+          "탐색"
+        ],
+        "stat": "precision"
+      },
+      {
+        "name": "지형 활용 (1회 판정)",
+        "body": "주변 환경 활용 시 회피 판정 +2",
+        "tags": [
+          "회피",
+          "+2"
+        ],
+        "stat": "speed"
+      },
+      {
+        "name": "방해 사격",
+        "body": "(정밀 vs 건강, SP 2 소모) 적 1체의 다음 2턴까지 행동에 -2",
+        "tags": [
+          "SP 2",
+          "디버프"
+        ],
+        "stat": "precision"
+      },
+      {
+        "name": "더블탭",
+        "body": "(SP 2 소모) 두번 공격. 명중률 -2",
+        "tags": [
+          "SP 2",
+          "공격"
+        ],
+        "stat": "precision"
+      },
+      {
+        "name": "탄알",
+        "body": "철제 탄알 31 / 8데미지",
+        "tags": [
+          "소모품",
+          "31"
+        ],
+        "stat": "precision"
+      }
     ],
+    "statusEffects": {
+      "pleasure": 0,
+      "climax": 0,
+      "climaxCooldown": 0,
+      "madness": 0,
+      "fear": 0,
+      "lust": 0,
+      "desire": 0,
+      "intoxication": 0,
+      "dizziness": 0,
+      "stench": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "vomiting": 0,
+      "sticky": 0,
+      "stunned": 0,
+      "disarmed": 0,
+      "prone": 0,
+      "silenced": 0,
+      "blinded": 0,
+      "deafened": 0,
+      "restrained": 0,
+      "taunted": 0,
+      "paralyzed": 0,
+      "staggered": 0
+    },
+    "statusImmunities": {},
+    "executionState": {
+      "spellSlots": null,
+      "movementLocks": [],
+      "statusPenalties": [],
+      "rollBonuses": []
+    },
+    "speechStyle": "",
+    "combatTendency": ""
   },
+  {
+    "id": "luna",
+    "name": "루나",
+    "sigil": "루",
+    "image": "./assets/luna.png",
+    "role": "마나볼",
+    "tendency": "쾌락주의",
+    "bases": {
+      "hp": 30,
+      "stamina": 30,
+      "strength": 6,
+      "vitality": 6,
+      "speed": 6,
+      "precision": 6,
+      "intelligence": 12,
+      "wisdom": 6,
+      "charm": 9,
+      "damage": 0,
+      "offhandDamage": 0,
+      "armor": 0
+    },
+    "baseLabels": {
+      "damage": "x",
+      "offhandDamage": "x",
+      "armor": "x"
+    },
+    "skillBonuses": {
+      "vitality": 4,
+      "speed": -3
+    },
+    "initialState": {
+      "hp": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "stamina": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "strength": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "vitality": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "speed": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "precision": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "intelligence": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "wisdom": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "charm": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "damage": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "offhandDamage": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "armor": {
+        "increase": 0,
+        "decrease": 0
+      }
+    },
+    "equipment": [
+      {
+        "slot": "머리",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "외투",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "상의",
+        "name": "로브",
+        "stats": {},
+        "durability": {
+          "max": 15,
+          "current": 15
+        }
+      },
+      {
+        "slot": "하의",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "신발",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "장갑",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "반지",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "목걸이",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "귀걸이",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "팔찌",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "주무기",
+        "name": "완드",
+        "stats": {
+          "damage": 1
+        },
+        "durability": null
+      },
+      {
+        "slot": "보조무기",
+        "name": "",
+        "stats": {},
+        "durability": null
+      }
+    ],
+    "bag": {
+      "money": 0,
+      "equipment": [],
+      "consumables": [],
+      "materials": [],
+      "quest": []
+    },
+    "skills": [
+      {
+        "name": "흡정",
+        "body": "정액을 체내에 받을 시, 지능 다이스. 결과값의 50%만큼 지능 숙련도 증가 (현재 45%, 필요 숙련도는 지능의 최대값).",
+        "tags": [
+          "마법 1",
+          "숙련도"
+        ],
+        "skillType": "active",
+        "stat": "intelligence"
+      },
+      {
+        "name": "마나볼<1>",
+        "body": "지능 결과값 +4",
+        "tags": [
+          "SP 2",
+          "공격"
+        ],
+        "skillType": "active",
+        "stat": "intelligence"
+      },
+      {
+        "name": "기승위",
+        "body": "민첩 다이스 +1 (리드권 있는 경우) (SP:2)",
+        "tags": [
+          "SP 2",
+          "행동"
+        ],
+        "skillType": "active",
+        "stat": "speed"
+      },
+      {
+        "name": "늑대 리듬 동조",
+        "body": "적의 속도가 자신보다 빠를 때 받는 쾌락 피해 +1. 전투 시작 시 속도 판정에 성공하면 전투가 끝날 때까지 자신의 턴 시작마다 SP 1을 회복한다.",
+        "tags": [
+          "패시브",
+          "회복"
+        ],
+        "skillType": "passive",
+        "stat": "speed"
+      },
+      {
+        "name": "야수의 정수 (1단계)",
+        "body": "항상 건강 +4, 속도 -3. 스테미나를 소비하는 행동의 소모량이 1 증가한다.",
+        "tags": [
+          "패시브",
+          "능력치"
+        ],
+        "skillType": "passive",
+        "stat": "vitality"
+      },
+      {
+        "name": "마조히스트 (3)",
+        "body": "폭력적 성향의 적과 전투 중 모든 판정에 -2. 받는 쾌락 피해가 1 증가한다.",
+        "tags": [
+          "패시브",
+          "상태"
+        ],
+        "skillType": "passive",
+        "stat": "charm"
+      }
+    ],
+    "statusEffects": {
+      "pleasure": 39,
+      "climax": 0,
+      "climaxCooldown": 0,
+      "madness": 0,
+      "fear": 0,
+      "lust": 0,
+      "desire": 0,
+      "intoxication": 1,
+      "dizziness": 0,
+      "stench": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "vomiting": 0,
+      "sticky": 0,
+      "stunned": 0,
+      "disarmed": 0,
+      "prone": 0,
+      "silenced": 0,
+      "blinded": 0,
+      "deafened": 0,
+      "restrained": 0,
+      "taunted": 0,
+      "paralyzed": 0,
+      "staggered": 0
+    },
+    "statusImmunities": {
+      "climax": {
+        "turns": 5,
+        "uses": null
+      }
+    },
+    "executionState": {
+      "spellSlots": null,
+      "movementLocks": [],
+      "statusPenalties": [],
+      "rollBonuses": []
+    },
+    "speechStyle": "",
+    "combatTendency": ""
+  },
+  {
+    "id": "bom-hayul",
+    "name": "봄하율",
+    "sigil": "봄",
+    "image": "./assets/bom-hayul.png",
+    "role": "회복 마법사",
+    "tendency": "외유내강",
+    "bases": {
+      "hp": 30,
+      "stamina": 30,
+      "strength": 6,
+      "vitality": 6,
+      "speed": 6,
+      "precision": 6,
+      "intelligence": 6,
+      "wisdom": 6,
+      "charm": 6,
+      "damage": 0,
+      "offhandDamage": 0,
+      "armor": 0
+    },
+    "baseLabels": {
+      "damage": "x",
+      "offhandDamage": "x",
+      "armor": "x"
+    },
+    "skillBonuses": {},
+    "initialState": {
+      "hp": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "stamina": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "strength": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "vitality": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "speed": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "precision": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "intelligence": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "wisdom": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "charm": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "damage": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "offhandDamage": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "armor": {
+        "increase": 0,
+        "decrease": 0
+      }
+    },
+    "equipment": [
+      {
+        "slot": "머리",
+        "name": "",
+        "stats": {},
+        "durability": null,
+        "effect": ""
+      },
+      {
+        "slot": "외투",
+        "name": "",
+        "stats": {},
+        "durability": null,
+        "effect": ""
+      },
+      {
+        "slot": "상의",
+        "name": "프릴드레스",
+        "stats": {},
+        "durability": {
+          "max": 15,
+          "current": 15
+        },
+        "effect": ""
+      },
+      {
+        "slot": "하의",
+        "name": "",
+        "stats": {},
+        "durability": null,
+        "effect": ""
+      },
+      {
+        "slot": "신발",
+        "name": "",
+        "stats": {},
+        "durability": null,
+        "effect": ""
+      },
+      {
+        "slot": "장갑",
+        "name": "",
+        "stats": {},
+        "durability": null,
+        "effect": ""
+      },
+      {
+        "slot": "반지",
+        "name": "",
+        "stats": {},
+        "durability": null,
+        "effect": ""
+      },
+      {
+        "slot": "목걸이",
+        "name": "",
+        "stats": {},
+        "durability": null,
+        "effect": ""
+      },
+      {
+        "slot": "귀걸이",
+        "name": "",
+        "stats": {},
+        "durability": null,
+        "effect": ""
+      },
+      {
+        "slot": "팔찌",
+        "name": "",
+        "stats": {},
+        "durability": null,
+        "effect": ""
+      },
+      {
+        "slot": "주무기",
+        "name": "거울 니샤 +1 (붉은 박쥐 마석 인첸트)",
+        "stats": {
+          "damage": 1
+        },
+        "durability": null,
+        "effect": ""
+      },
+      {
+        "slot": "보조무기",
+        "name": "",
+        "stats": {},
+        "durability": null,
+        "effect": ""
+      }
+    ],
+    "bag": {
+      "money": 205,
+      "equipment": [
+        {
+          "name": "낡은 고블린 단검",
+          "note": "무기, 힘 2"
+        },
+        {
+          "name": "두목의 강철 너클",
+          "note": "수리 후 사용할 수 있는 희귀 근접 장비.\n기본 장비 보너스: 힘 +2\n견고한 구조: 무기 내구도 감소량이 절반으로 감소합니다.\n획득처: 폭력배 전리품 · 드롭 확률 3%\n\n[추가 랜덤 옵션 1] 힘 +1: 고정 장비 보너스에 힘 +1이 추가됩니다.\n[추가 랜덤 옵션 3] 거친 제압: 능동 스킬 [거친 제압]을 획득합니다. 사용 시 넘어진 상대에게 [속박]을 부여한 채 공격합니다. 공격 명중 시 [현기증] 스택 +1을 확정 부여합니다.\n장비 힘 보너스 합계: +3 (기본 +2, 추가 옵션 +1)",
+          "quantity": 1,
+          "tags": [
+            "힘 +3",
+            "거친 제압"
+          ]
+        }
+      ],
+      "consumables": [
+        {
+          "name": "붕대",
+          "quantity": 2,
+          "note": "출혈 상태이상 해제/감소 가능"
+        },
+        {
+          "name": "조잡한 회복약",
+          "quantity": 1,
+          "note": "사용 시 체력 5 회복, 단 20% 확률로 구역질 상태이상"
+        },
+        {
+          "name": "하급 해독제",
+          "quantity": 2
+        },
+        {
+          "name": "시원한 과일수",
+          "quantity": 3,
+          "tags": [
+            "현재 보급"
+          ]
+        },
+        {
+          "name": "질 좋은 횃불",
+          "quantity": 3,
+          "tags": [
+            "현재 보급"
+          ]
+        },
+        {
+          "name": "가벼운 붕대",
+          "quantity": 3,
+          "tags": [
+            "현재 보급"
+          ]
+        }
+      ],
+      "materials": [
+        {
+          "name": "마력석 조각",
+          "quantity": 1
+        }
+      ],
+      "quest": [
+        {
+          "name": "맑은 액체 유리병",
+          "quantity": 1,
+          "note": "정체 불명 - 감별 필요"
+        }
+      ]
+    },
+    "skills": [
+      {
+        "name": "여우비lv2",
+        "skillType": "active",
+        "id": "7b1c473e-a220-4f70-8e8b-bce7bfea7454",
+        "effectRules": {
+          "version": 1,
+          "enabled": false,
+          "groups": []
+        },
+        "body": "힐진화. 주문횟수 1 소모. 지능다이스로 (자신 포함 모든 아군 100% 회복 및 적 전체 50% 피해) +2 (정밀 vs 속도).",
+        "tags": [
+          "마법 1"
+        ],
+        "stat": "intelligence"
+      },
+      {
+        "name": "거울 파편 장벽",
+        "skillType": "active",
+        "id": "b9e7802c-c26d-47f3-be23-b8e14f985ee7",
+        "effectRules": {
+          "version": 1,
+          "enabled": false,
+          "groups": []
+        },
+        "body": "주문횟수 1 소모. 아군 전체가 공격받을 때 지능결과 /2 만큼 1회 차단.",
+        "tags": [
+          "마법 1"
+        ],
+        "stat": "intelligence"
+      },
+      {
+        "name": "수호의 빛",
+        "skillType": "active",
+        "id": "d2ed8eac-f2ba-4246-bf42-f21a0f3281a4",
+        "effectRules": {
+          "version": 1,
+          "enabled": false,
+          "groups": []
+        },
+        "body": "패시브. 아군 치명타 피격 시 전투당 1회, 주문횟수 소모 없이 거울 파편 장벽 자동 발동.",
+        "tags": [
+          "패시브"
+        ],
+        "stat": "wisdom"
+      }
+    ],
+    "statusEffects": {
+      "pleasure": 0,
+      "climax": 0,
+      "climaxCooldown": 0,
+      "madness": 0,
+      "fear": 0,
+      "lust": 1,
+      "desire": 0,
+      "intoxication": 0,
+      "dizziness": 0,
+      "stench": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "vomiting": 0,
+      "sticky": 0,
+      "stunned": 0,
+      "disarmed": 0,
+      "prone": 0,
+      "silenced": 0,
+      "blinded": 0,
+      "deafened": 0,
+      "restrained": 0,
+      "taunted": 0,
+      "paralyzed": 0,
+      "staggered": 0
+    },
+    "statusImmunities": {},
+    "executionState": {
+      "spellSlots": {
+        "current": 2,
+        "max": 6
+      },
+      "movementLocks": [],
+      "statusPenalties": [],
+      "rollBonuses": []
+    },
+    "speechStyle": "",
+    "combatTendency": ""
+  },
+  {
+    "id": "sia",
+    "name": "시아",
+    "sigil": "시",
+    "image": "./assets/sia.png",
+    "role": "네코미미 도적",
+    "tendency": "냉정함",
+    "bases": {
+      "hp": 25,
+      "stamina": 25,
+      "strength": 4,
+      "vitality": 5,
+      "speed": 8,
+      "precision": 6,
+      "intelligence": 6,
+      "wisdom": 6,
+      "charm": 7,
+      "damage": 0,
+      "offhandDamage": 0,
+      "armor": 0
+    },
+    "baseLabels": {
+      "damage": "x",
+      "offhandDamage": "x",
+      "armor": "x"
+    },
+    "skillBonuses": {},
+    "initialState": {
+      "hp": {
+        "increase": 0,
+        "decrease": 25
+      },
+      "stamina": {
+        "increase": 0,
+        "decrease": 25
+      },
+      "strength": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "vitality": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "speed": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "precision": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "intelligence": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "wisdom": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "charm": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "damage": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "offhandDamage": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "armor": {
+        "increase": 0,
+        "decrease": 0
+      }
+    },
+    "equipment": [
+      {
+        "slot": "머리",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "외투",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "상의",
+        "name": "경량 도적복",
+        "stats": {
+          "armor": 2
+        },
+        "durability": {
+          "max": 20,
+          "current": 20
+        }
+      },
+      {
+        "slot": "하의",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "신발",
+        "name": "부드러운 가죽 장화",
+        "stats": {},
+        "durability": {
+          "max": 20,
+          "current": 20
+        }
+      },
+      {
+        "slot": "장갑",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "반지",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "목걸이",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "귀걸이",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "팔찌",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "주무기",
+        "name": "날렵한 단검",
+        "stats": {
+          "precision": 1,
+          "damage": 3
+        },
+        "durability": {
+          "max": 20,
+          "current": 20
+        }
+      },
+      {
+        "slot": "보조무기",
+        "name": "투척 단검 ×3",
+        "stats": {
+          "offhandDamage": 2
+        },
+        "durability": null
+      }
+    ],
+    "bag": {
+      "money": 0,
+      "equipment": [
+        {
+          "name": "도둑 도구 세트",
+          "quantity": 1,
+          "note": "자물쇠·함정 해제 판정 +2"
+        },
+        {
+          "name": "갈고리와 가는 밧줄",
+          "quantity": 1,
+          "note": "등반·침입용"
+        },
+        {
+          "name": "투척 단검",
+          "quantity": 3,
+          "note": "원거리 피해 +2, 사용 후 회수 가능",
+          "tags": [
+            "장비 중"
+          ]
+        }
+      ],
+      "consumables": [
+        {
+          "name": "연막탄",
+          "quantity": 2,
+          "note": "주변 시야 차단, 이탈 판정 +2"
+        }
+      ],
+      "materials": [],
+      "quest": []
+    },
+    "skills": [
+      {
+        "name": "암습",
+        "body": "은신 중이거나 적이 다른 대상을 보고 있을 때 피해 +3.",
+        "tags": [
+          "SP 4",
+          "공격"
+        ],
+        "stat": "precision"
+      },
+      {
+        "name": "고양이 걸음",
+        "body": "한 턴 동안 이동·은신·회피 판정에 속도 +2.",
+        "tags": [
+          "SP 3",
+          "이동"
+        ],
+        "stat": "speed"
+      },
+      {
+        "name": "도둑의 손놀림",
+        "body": "소매치기·자물쇠·함정 해제 판정에 정밀 +2.",
+        "tags": [
+          "패시브",
+          "탐색"
+        ],
+        "stat": "precision"
+      },
+      {
+        "name": "고양이의 감각",
+        "body": "기습과 숨은 적을 발견하는 지혜 판정 +2.",
+        "tags": [
+          "패시브",
+          "탐색"
+        ],
+        "stat": "wisdom"
+      },
+      {
+        "name": "능청스러운 유혹",
+        "body": "매력 vs 지혜. 성공 시 적 1체의 다음 판정에 -2.",
+        "tags": [
+          "SP 2",
+          "디버프"
+        ],
+        "stat": "charm"
+      }
+    ],
+    "statusEffects": {
+      "pleasure": 0,
+      "climax": 0,
+      "climaxCooldown": 0,
+      "madness": 0,
+      "fear": 0,
+      "lust": 8,
+      "desire": 0,
+      "intoxication": 0,
+      "dizziness": 0,
+      "stench": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "vomiting": 0,
+      "sticky": 0,
+      "stunned": 0,
+      "disarmed": 0,
+      "prone": 1,
+      "silenced": 0,
+      "blinded": 0,
+      "deafened": 0,
+      "restrained": 1,
+      "taunted": 0,
+      "paralyzed": 1,
+      "staggered": 1
+    },
+    "statusImmunities": {},
+    "executionState": {
+      "spellSlots": null,
+      "movementLocks": [],
+      "statusPenalties": [],
+      "rollBonuses": []
+    },
+    "speechStyle": "단답형",
+    "combatTendency": ""
+  },
+  {
+    "id": "yuwol",
+    "name": "유월",
+    "sigil": "유",
+    "image": "./assets/yuwol.png",
+    "role": "암살자",
+    "tendency": "호기심",
+    "bases": {
+      "hp": 35,
+      "stamina": 35,
+      "strength": 6,
+      "vitality": 7,
+      "speed": 8,
+      "precision": 6,
+      "intelligence": 5,
+      "wisdom": 7,
+      "charm": 6,
+      "damage": 0,
+      "offhandDamage": 0,
+      "armor": 0
+    },
+    "baseLabels": {
+      "damage": "x",
+      "offhandDamage": "x",
+      "armor": "x"
+    },
+    "skillBonuses": {},
+    "initialState": {
+      "hp": {
+        "increase": 0,
+        "decrease": 1
+      },
+      "stamina": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "strength": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "vitality": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "speed": {
+        "increase": 1,
+        "decrease": 0
+      },
+      "precision": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "intelligence": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "wisdom": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "charm": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "damage": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "offhandDamage": {
+        "increase": 0,
+        "decrease": 0
+      },
+      "armor": {
+        "increase": 0,
+        "decrease": 0
+      }
+    },
+    "equipment": [
+      {
+        "slot": "머리",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "외투",
+        "name": "밤까마귀의 깃털 망토",
+        "stats": {
+          "speed": 1
+        },
+        "durability": {
+          "max": 10,
+          "current": 10
+        },
+        "effect": "검은 깃털 장식이 달린 망토. 움직일 때마다 깃털이 흩날리며 시선을 분산시킵니다."
+      },
+      {
+        "slot": "상의",
+        "name": "뒷골목의 그림자 슈트",
+        "stats": {
+          "speed": 1,
+          "armor": 2
+        },
+        "durability": {
+          "max": 20,
+          "current": 15
+        },
+        "effect": "짙은 회색 가죽으로 만든 타이트한 슈트. 은신 상태 시 속도 +1."
+      },
+      {
+        "slot": "하의",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "신발",
+        "name": "민첩의 가죽 장화",
+        "stats": {
+          "speed": 2
+        },
+        "durability": null,
+        "effect": "속도 +2."
+      },
+      {
+        "slot": "장갑",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "반지",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "목걸이",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "귀걸이",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "팔찌",
+        "name": "",
+        "stats": {},
+        "durability": null
+      },
+      {
+        "slot": "주무기",
+        "name": "암살자용 단검",
+        "stats": {
+          "damage": 2
+        },
+        "durability": null,
+        "effect": "기습 시 첫 공격 데미지 +2."
+      },
+      {
+        "slot": "보조무기",
+        "name": "톱니 단검",
+        "stats": {
+          "offhandDamage": 3
+        },
+        "durability": null,
+        "effect": "[출혈]은 매 턴 스택당 데미지 1. 대실패 시 자신에게 [출혈]을 부여합니다."
+      }
+    ],
+    "bag": {
+      "money": 531,
+      "equipment": [
+        {
+          "name": "낡은 롱소드",
+          "note": "데미지 +1",
+          "quantity": 1,
+          "tags": []
+        },
+        {
+          "name": "낡은 나무 방패",
+          "note": "내구도 19/20. 방어 시 피해량이 음수가 아닌 경우 내구도 차감. 받는 피해 -1",
+          "quantity": 1,
+          "tags": []
+        }
+      ],
+      "consumables": [
+        {
+          "name": "황동 램프",
+          "note": "튼튼한 황동으로 만든 휴대용 램프. 기름을 넣어 불을 밝힌다. 빛의 범위는 중간 정도.",
+          "quantity": 1,
+          "tags": []
+        },
+        {
+          "name": "랜턴 기름 (소)",
+          "quantity": 3,
+          "note": "램프에 넣을 수 있는 정제된 기름. 한 통으로 약 4시간 동안 불을 밝힐 수 있다.",
+          "tags": []
+        },
+        {
+          "name": "질긴 삼베 붕대",
+          "quantity": 2,
+          "note": "거칠지만 질긴 붕대. 지혈용으로 쓰인다. 사용 시 출혈 상태 제거.",
+          "tags": [
+            "출혈 해제"
+          ]
+        },
+        {
+          "name": "여행용 육포",
+          "quantity": 2,
+          "note": "짭짤하게 간이 된 육포. 보존성이 뛰어나고 열량이 높다. 사용 시 스테미나 +10 회복.",
+          "tags": [
+            "SP 회복"
+          ]
+        },
+        {
+          "name": "등반용 로프",
+          "note": "10미터 길이의 튼튼한 밧줄. 절벽을 오르거나 함정을 건널 때 유용하다.",
+          "quantity": 1,
+          "tags": []
+        },
+        {
+          "name": "부싯돌 세트",
+          "note": "불을 피우기 위한 도구. 젖어도 사용할 수 있다.",
+          "quantity": 1,
+          "tags": []
+        },
+        {
+          "name": "하급 상처 치료제",
+          "quantity": 2,
+          "note": "사용 시 HP 10 회복.",
+          "tags": [
+            "HP 회복"
+          ]
+        },
+        {
+          "name": "연막탄",
+          "note": "사용 시 도주 성공률 증가 및 다음 턴 은신 판정 보너스.",
+          "tags": [
+            "도주",
+            "은신"
+          ],
+          "quantity": 1
+        },
+        {
+          "name": "상급 마나 회복 물약",
+          "note": "주문 횟수 75% 회복.",
+          "tags": [
+            "주문 회복"
+          ],
+          "quantity": 1
+        },
+        {
+          "name": "청록색 진정 시약",
+          "note": "",
+          "quantity": 1,
+          "tags": []
+        },
+        {
+          "name": "미약 오일",
+          "note": "",
+          "quantity": 1,
+          "tags": []
+        },
+        {
+          "name": "농축 미약 향",
+          "note": "",
+          "quantity": 1,
+          "tags": []
+        }
+      ],
+      "materials": [
+        {
+          "name": "쥐고기",
+          "quantity": 6,
+          "note": "맛없겠지만 배고픔을 위해 챙겨야 하는 음식 재료.",
+          "tags": []
+        }
+      ],
+      "quest": []
+    },
+    "skills": [
+      {
+        "name": "완벽주의자",
+        "body": "양손에 각각 장비가 있을 경우 행동 다이스 눈 +1.",
+        "tags": [
+          "패시브",
+          "특성"
+        ],
+        "skillType": "passive",
+        "stat": "precision"
+      },
+      {
+        "name": "허당주의자",
+        "body": "양손에 각각 장비가 있을 경우 행동 다이스 눈 -1.",
+        "tags": [
+          "패시브",
+          "특성"
+        ],
+        "skillType": "passive",
+        "stat": "precision"
+      },
+      {
+        "name": "가벼운 발걸음",
+        "body": "은신 상태에서 속도 결과 +1.",
+        "tags": [
+          "패시브",
+          "은신"
+        ],
+        "skillType": "passive",
+        "stat": "speed"
+      },
+      {
+        "name": "뒷골목의 그림자 슈트",
+        "body": "짙은 회색 가죽으로 만든 타이트한 슈트. 방어력 +2, 은신 상태 시 속도 +1. 내구도 15/20.",
+        "tags": [
+          "패시브",
+          "장비 효과"
+        ],
+        "skillType": "passive",
+        "stat": "speed"
+      },
+      {
+        "name": "암살자용 단검",
+        "body": "데미지 +2. 기습 시 첫 공격 데미지 +2.",
+        "tags": [
+          "패시브",
+          "장비 효과"
+        ],
+        "skillType": "passive",
+        "stat": "precision"
+      },
+      {
+        "name": "톱니 단검",
+        "body": "데미지(보조무기) +3. [출혈]은 매 턴 스택당 데미지 1. 대실패 시 자신에게 [출혈]을 부여합니다.",
+        "tags": [
+          "패시브",
+          "장비 효과"
+        ],
+        "skillType": "passive",
+        "stat": "precision"
+      },
+      {
+        "name": "밤까마귀의 깃털 망토",
+        "body": "검은 깃털 장식이 달린 망토. 움직일 때마다 깃털이 흩날리며 시선을 분산시킵니다. 속도 +1. 내구도 10/10.",
+        "tags": [
+          "패시브",
+          "장비 효과"
+        ],
+        "skillType": "passive",
+        "stat": "speed"
+      },
+      {
+        "name": "민첩의 가죽 장화",
+        "body": "속도 +2.",
+        "tags": [
+          "패시브",
+          "장비 효과"
+        ],
+        "skillType": "passive",
+        "stat": "speed"
+      },
+      {
+        "id": "bd2584de-f08f-444c-912b-d9c6fe277012",
+        "name": "화장",
+        "body": "화장 상태 보유 시 매력 +1",
+        "tags": [
+          "패시브"
+        ],
+        "skillType": "passive",
+        "stat": "charm"
+      }
+    ],
+    "statusEffects": {
+      "pleasure": 0,
+      "climax": 0,
+      "climaxCooldown": 0,
+      "madness": 0,
+      "fear": 0,
+      "lust": 0,
+      "desire": 0,
+      "intoxication": 0,
+      "dizziness": 0,
+      "stench": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "vomiting": 0,
+      "sticky": 0,
+      "stunned": 0,
+      "disarmed": 0,
+      "prone": 0,
+      "silenced": 0,
+      "blinded": 0,
+      "deafened": 0,
+      "restrained": 0,
+      "taunted": 0,
+      "paralyzed": 0,
+      "staggered": 0
+    },
+    "statusImmunities": {},
+    "executionState": {
+      "spellSlots": null,
+      "movementLocks": [],
+      "statusPenalties": [],
+      "rollBonuses": []
+    },
+    "speechStyle": "살짝 장난기 있는 나긋나긋한 어조",
+    "combatTendency": ""
+  }
 ];
+
+const PLAYER_SYNC_REVISION = "20261025-player-sync-v1";
+function applyPlayerSnapshot() {
+  if (localStorage.getItem(SAVE_KEY + ':player-sync') === PLAYER_SYNC_REVISION) return;
+  const previous = localStorage.getItem(SAVE_KEY);
+  if (previous) localStorage.setItem(SAVE_KEY + ':before-' + PLAYER_SYNC_REVISION, previous);
+  const payload = {characters: CHARACTERS, characterState: Object.fromEntries(CHARACTERS.map(c => [c.id, c.initialState || {}]))};
+  localStorage.setItem(SAVE_KEY, JSON.stringify(payload));
+  localStorage.setItem(SAVE_KEY + ':player-sync', PLAYER_SYNC_REVISION);
+}
+applyPlayerSnapshot();
+
+
+// 기존 저장의 다른 변경을 보존하며 새 스킬과 누락 장비만 동기화한다.
+function syncMakeupAndKnuckles() {
+  const key = SAVE_KEY + ':makeup-knuckles-v1';
+  if (localStorage.getItem(key)) return;
+  const previous = localStorage.getItem(SAVE_KEY);
+  const saved = JSON.parse(previous || '{"characters":[]}');
+  if (previous) localStorage.setItem(key + ':backup', previous);
+  const yuwol = saved.characters?.find(c => c.id === 'yuwol');
+  const baseYuwol = CHARACTERS.find(c => c.id === 'yuwol');
+  if (yuwol) {
+    yuwol.skills = (yuwol.skills || []).filter(s => s.name !== '화장');
+    yuwol.skills.push(cloneData(baseYuwol.skills.find(s => s.name === '화장')));
+  }
+  const hayul = saved.characters?.find(c => c.id === 'bom-hayul');
+  const baseHayul = CHARACTERS.find(c => c.id === 'bom-hayul');
+  if (hayul) {
+    hayul.bag = hayul.bag || cloneData(baseHayul.bag);
+    hayul.bag.equipment = (hayul.bag.equipment || []).filter(x => x.name !== '두목의 강철 너클');
+    hayul.bag.equipment.push(cloneData(baseHayul.bag.equipment.find(x => x.name === '두목의 강철 너클')));
+  }
+  localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+  localStorage.setItem(key, '1');
+}
+syncMakeupAndKnuckles();
 
 const savedState = loadSavedData();
 const characterState = Object.fromEntries(CHARACTERS.map((character) => [character.id, createState(character)]));
@@ -633,6 +2007,7 @@ function sumStats(items) {
 function getTotal(stat, character = getCharacter()) {
   if (!character) return 0;
   const state = characterState[character.id]?.[stat.key] || { increase: 0, decrease: 0 };
+  if (["hp", "stamina"].includes(stat.key)) { const maximum = Math.max(1, getTotal({key:"vitality"}, character) * 5); return clamp(maximum + state.increase - state.decrease, 0, maximum); }
   const gear = sumStats(character.equipment)[stat.key] || 0;
   const skill = character.skillBonuses[stat.key] || 0;
   return (character.bases[stat.key] || 0) + gear + skill + state.increase - state.decrease;
@@ -772,14 +2147,21 @@ function renderIdentity() {
 }
 
 function renderResources() {
+  const characterSnapshot = getCharacter();
+  let detail = document.getElementById("playerSnapshotStatus");
+  if (!detail) { detail = document.createElement("p"); detail.id = "playerSnapshotStatus"; document.getElementById("skillGrid").before(detail); }
+  const labels = {"pleasure":"쾌락","climax":"절정","climaxCooldown":"절정 재발 대기","madness":"광기","fear":"두려움","lust":"음욕","desire":"욕정","intoxication":"도취","dizziness":"현기증","stench":"악취","poison":"독","bleeding":"출혈","vomiting":"구토","sticky":"점착","stunned":"기절","disarmed":"무장해제","prone":"넘어짐","silenced":"침묵","blinded":"실명","deafened":"청각마비","restrained":"속박","taunted":"도발","paralyzed":"마비","staggered":"경직"};
+  const statuses = Object.entries(characterSnapshot?.statusEffects || {}).filter(([key,value]) => Number(value) > 0).map(([key,value]) => `${labels[key] || key} ${value}`);
+  const slots = characterSnapshot?.executionState?.spellSlots;
+  detail.textContent = "현재 상태: " + (statuses.join(", ") || "정상") + (slots ? ` · 주문횟수 ${slots.current}/${slots.max}` : "");
   const character = getCharacter();
   const hp = getTotal({ key: "hp" }, character);
   const stamina = getTotal({ key: "stamina" }, character);
   const magicUses = getMagicUses(character);
   const resources = [
-    { label: "체력", value: hp, max: character.bases.hp, tone: "#b53858", soft: "#f09aae" },
-    { label: "스테미나", value: stamina, max: character.bases.stamina, tone: "#3f8d6a", soft: "#8fd0b4" },
-    { label: "마법 가능횟수", value: magicUses, max: 6, tone: "#4f3a80", soft: "#9c86d9" },
+    { label: "체력", value: hp, max: Math.max(1, getTotal({key:"vitality"},character)*5), tone: "#b53858", soft: "#f09aae" },
+    { label: "스테미나", value: stamina, max: Math.max(1, getTotal({key:"vitality"},character)*5), tone: "#3f8d6a", soft: "#8fd0b4" },
+    { label: "마법 가능횟수", value: magicUses, max: character.executionState?.spellSlots?.max ?? 6, tone: "#4f3a80", soft: "#9c86d9" },
   ];
 
   document.getElementById("resourceList").innerHTML = resources
@@ -801,7 +2183,7 @@ function renderResources() {
 
 function getMagicUses(character = getCharacter()) {
   if (!character) return 0;
-  return Math.floor(5 + getTotal({ key: "intelligence" }, character) / 5);
+  return character.executionState?.spellSlots?.current ?? Math.floor(5 + getTotal({ key: "intelligence" }, character) / 5);
 }
 
 function renderCombatStrip() {
