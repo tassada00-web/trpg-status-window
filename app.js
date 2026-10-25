@@ -906,28 +906,29 @@ const CHARACTERS = [
         "effect": ""
       },
       {
+        "name": "두목의 강철 너클",
+        "note": "수리 후 사용할 수 있는 희귀 근접 장비.\n기본 장비 보너스: 힘 +2\n견고한 구조: 무기 내구도 감소량이 절반으로 감소합니다.\n획득처: 폭력배 전리품 · 드롭 확률 3%\n\n[추가 랜덤 옵션 1] 힘 +1: 고정 장비 보너스에 힘 +1이 추가됩니다.\n[추가 랜덤 옵션 3] 거친 제압: 능동 스킬 [거친 제압]을 획득합니다. 사용 시 넘어진 상대에게 [속박]을 부여한 채 공격합니다. 공격 명중 시 [현기증] 스택 +1을 확정 부여합니다.\n장비 힘 보너스 합계: +3 (기본 +2, 추가 옵션 +1)",
+        "quantity": 1,
+        "tags": [
+          "힘 +3",
+          "거친 제압",
+          "장비 중",
+          "보조무기"
+        ],
         "slot": "보조무기",
-        "name": "",
-        "stats": {},
+        "stats": {
+          "strength": 3
+        },
         "durability": null,
-        "effect": ""
+        "effect": "수리 후 사용할 수 있는 희귀 근접 장비.\n기본 장비 보너스: 힘 +2\n견고한 구조: 무기 내구도 감소량이 절반으로 감소합니다.\n획득처: 폭력배 전리품 · 드롭 확률 3%\n\n[추가 랜덤 옵션 1] 힘 +1: 고정 장비 보너스에 힘 +1이 추가됩니다.\n[추가 랜덤 옵션 3] 거친 제압: 능동 스킬 [거친 제압]을 획득합니다. 사용 시 넘어진 상대에게 [속박]을 부여한 채 공격합니다. 공격 명중 시 [현기증] 스택 +1을 확정 부여합니다.\n장비 힘 보너스 합계: +3 (기본 +2, 추가 옵션 +1)"
       }
     ],
     "bag": {
-      "money": 205,
+      "money": 193,
       "equipment": [
         {
           "name": "낡은 고블린 단검",
           "note": "무기, 힘 2"
-        },
-        {
-          "name": "두목의 강철 너클",
-          "note": "수리 후 사용할 수 있는 희귀 근접 장비.\n기본 장비 보너스: 힘 +2\n견고한 구조: 무기 내구도 감소량이 절반으로 감소합니다.\n획득처: 폭력배 전리품 · 드롭 확률 3%\n\n[추가 랜덤 옵션 1] 힘 +1: 고정 장비 보너스에 힘 +1이 추가됩니다.\n[추가 랜덤 옵션 3] 거친 제압: 능동 스킬 [거친 제압]을 획득합니다. 사용 시 넘어진 상대에게 [속박]을 부여한 채 공격합니다. 공격 명중 시 [현기증] 스택 +1을 확정 부여합니다.\n장비 힘 보너스 합계: +3 (기본 +2, 추가 옵션 +1)",
-          "quantity": 1,
-          "tags": [
-            "힘 +3",
-            "거친 제압"
-          ]
         }
       ],
       "consumables": [
@@ -1026,6 +1027,18 @@ const CHARACTERS = [
           "패시브"
         ],
         "stat": "wisdom"
+      },
+      {
+        "id": "2db62410-74db-4a27-a3a2-58b1d2dc80da",
+        "name": "거친 제압",
+        "body": "능동 스킬. 넘어진 상대에게 [속박]을 부여한 채 공격합니다. 공격 명중 시 [현기증] 스택 +1을 확정 부여합니다.",
+        "tags": [
+          "능동",
+          "장비 효과",
+          "두목의 강철 너클"
+        ],
+        "skillType": "active",
+        "stat": "strength"
       }
     ],
     "statusEffects": {
@@ -1788,17 +1801,34 @@ function syncMakeupAndKnuckles() {
     yuwol.skills = (yuwol.skills || []).filter(s => s.name !== '화장');
     yuwol.skills.push(cloneData(baseYuwol.skills.find(s => s.name === '화장')));
   }
-  const hayul = saved.characters?.find(c => c.id === 'bom-hayul');
-  const baseHayul = CHARACTERS.find(c => c.id === 'bom-hayul');
-  if (hayul) {
-    hayul.bag = hayul.bag || cloneData(baseHayul.bag);
-    hayul.bag.equipment = (hayul.bag.equipment || []).filter(x => x.name !== '두목의 강철 너클');
-    hayul.bag.equipment.push(cloneData(baseHayul.bag.equipment.find(x => x.name === '두목의 강철 너클')));
-  }
   localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
   localStorage.setItem(key, '1');
 }
 syncMakeupAndKnuckles();
+
+
+function syncHayulEquippedKnuckles() {
+  const key = SAVE_KEY + ':hayul-equipped-knuckles-v1';
+  if (localStorage.getItem(key)) return;
+  const previous = localStorage.getItem(SAVE_KEY);
+  const saved = JSON.parse(previous || '{"characters":[]}');
+  const hayul = saved.characters?.find(c => c.id === 'bom-hayul');
+  const base = CHARACTERS.find(c => c.id === 'bom-hayul');
+  const equipped = base.equipment.find(x => x.name === '두목의 강철 너클');
+  if (previous) localStorage.setItem(key + ':backup', previous);
+  if (hayul) {
+    hayul.equipment = hayul.equipment || cloneData(base.equipment);
+    const index = hayul.equipment.findIndex(x => x.slot === equipped.slot);
+    if (index < 0) hayul.equipment.push(cloneData(equipped));
+    else hayul.equipment[index] = cloneData(equipped);
+    if (hayul.bag?.equipment) hayul.bag.equipment = hayul.bag.equipment.filter(x => x.name !== equipped.name);
+    hayul.skills = (hayul.skills || []).filter(x => x.name !== '거친 제압');
+    hayul.skills.push(cloneData(base.skills.find(x => x.name === '거친 제압')));
+  }
+  localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+  localStorage.setItem(key, '1');
+}
+syncHayulEquippedKnuckles();
 
 const savedState = loadSavedData();
 const characterState = Object.fromEntries(CHARACTERS.map((character) => [character.id, createState(character)]));
@@ -1902,6 +1932,7 @@ function loadSavedData() {
 
       if (Array.isArray(savedCharacter.equipment)) {
         character.equipment = savedCharacter.equipment.map((item) => ({
+          ...item,
           slot: item.slot || "",
           name: item.name || "",
           stats: normalizeStats(item.stats),
@@ -1911,6 +1942,7 @@ function loadSavedData() {
 
       if (Array.isArray(savedCharacter.skills)) {
         character.skills = savedCharacter.skills.map((skill) => ({
+          ...skill,
           name: skill.name || "",
           body: skill.body || "",
           tags: Array.isArray(skill.tags) ? skill.tags.filter(Boolean) : [],
@@ -2292,6 +2324,8 @@ function renderEquipment() {
           : `내구도 ${item.durability.current}/${item.durability.max}`
         : "";
       const bonuses = Object.entries(item.stats);
+      const description = String(item.effect || item.note || item.body || "").trim();
+      const tags = Array.isArray(item.tags) ? item.tags.filter(Boolean) : [];
       return `
         <article class="gear-card ${isEmpty ? "is-empty" : ""} ${isGmMode ? "is-editable" : ""}" data-equipment-index="${index}" tabindex="${isGmMode ? "0" : "-1"}">
           <div class="gear-head">
@@ -2310,6 +2344,8 @@ function renderEquipment() {
                 : "<span>보정 없음</span>"
             }
           </div>
+          ${description ? `<p class="gear-effect">${escapeHtml(description)}</p>` : ""}
+          ${tags.length ? `<div class="skill-tags">${tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
         </article>
       `;
     })

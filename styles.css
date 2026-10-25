@@ -1342,3 +1342,5 @@ h2 {
     width: 100%;
   }
 }
+
+.gear-effect { margin: 12px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; font-size: .82rem; }
